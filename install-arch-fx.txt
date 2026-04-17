@@ -65,7 +65,7 @@ Bring in dot-files:
 (ssh private key needed, if permissions problem: chmod 400 ~/.ssh/[key-file])
 mkdir ~/dot-files
 cd ~/dot-files
-git clone git@github.com:fx-tech-code/dotfiles-niri.git
+git clone git@github.com:fx-tech-code/arch-fx.git
 cd dotfiles-niri
 stow *
 
