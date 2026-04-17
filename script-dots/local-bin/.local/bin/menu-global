@@ -133,15 +133,15 @@ cmd_show-scripts() {
 }
 
 cmd_show-about() {
-  open-terminal-dialog fish -ic "fastfetch; exec fish"
+  open-terminal-dialog system-about
 }
 
 cmd_update-system() {
-  open-terminal-dialog fish -ic "update; exec fish"
+  open-terminal-dialog system-update
 }
 
 cmd_cleanup-system() {
-  open-terminal-dialog fish -ic "cleanup; exec fish"
+  open-terminal-dialog system-cleanup
 }
 
 cmd_install-package() {

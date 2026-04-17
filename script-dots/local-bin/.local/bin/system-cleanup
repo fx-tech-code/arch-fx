@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Cleanup for packages and orphaned dependencies using pacman and yay.
+echo "This is not implemented yet. Please run the cleanup command for your package manager in a terminal."
+terminal-show-done

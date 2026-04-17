@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Updates all packages and AUR packages using pacman and yay.
+echo "This is not implemented yet. Please run the update command for your package manager in a terminal."
+terminal-show-done

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Shows information about the system using fastfetch.
+fastfetch
+terminal-show-done
