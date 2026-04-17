@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Fuzzel Keybindings Menu for Niri WM
+# Displays all keybindings with descriptions from the Niri config
+
+# Path to keybindings config
+KEYBINDS_FILE="$HOME/.config/niri/cfg/keybinds.kdl"
+
+# Parse keybindings with titles
+keybinds_with_title=$(grep -E '^\s{4,}[A-Za-z0-9+]+\s+hotkey-overlay-title' "$KEYBINDS_FILE" | \
+    sed 's/^\s*\([A-Za-z0-9+]*\)\s*hotkey-overlay-title="\([^"]*\)".*/\1 → \2/')
+
+# Parse keybindings without titles
+keybinds_without_title=$(grep -E '^\s{4,}[A-Za-z0-9+]+\s*{' "$KEYBINDS_FILE" | \
+    grep -v 'hotkey-overlay-title' | \
+    sed 's/^\s*\([A-Za-z0-9+]*\)\s*{\s*\([^;]*\);\s*}/\1 → \2/')
+
+# Combine all keybindings
+keybinds=$(echo -e "$keybinds_with_title\n$keybinds_without_title" | sort)
+
+# Format as two columns: pad shortcuts to align arrows
+formatted_keybinds=$(echo "$keybinds" | awk -F' → ' '
+{
+    shortcuts[NR] = $1
+    descs[NR] = $2
+    if (length($1) > max_len) max_len = length($1)
+}
+END {
+    for (i=1; i<=NR; i++) {
+        printf "%-*s   →   %s\n", max_len, shortcuts[i], descs[i]
+    }
+}')
+
+# Show menu (informational - selecting does nothing)
+echo "$formatted_keybinds" | fuzzel --dmenu --lines=20 --width=60 --hide-prompt

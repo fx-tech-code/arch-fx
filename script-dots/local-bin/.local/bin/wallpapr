@@ -1,0 +1,154 @@
+#!/bin/bash
+
+# wallpapr: simple wallpaper helper around awww
+
+set -o pipefail
+
+CONFIG_DIR="$HOME/.config/wallpapr"
+CONFIG_FILE="$CONFIG_DIR/config"
+
+usage() {
+    cat >&2 <<EOF
+Usage:
+  $(basename "$0") set <filepath>
+  $(basename "$0") set-path <directory>
+  $(basename "$0") get-path
+  $(basename "$0") start-daemon
+  $(basename "$0")
+EOF
+}
+
+error() {
+    echo "Error: $1" >&2
+}
+
+require_command() {
+    local cmd="$1"
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+        error "'$cmd' is required but was not found in PATH"
+        exit 127
+    fi
+}
+
+normalize_dir() {
+    local dir="$1"
+    if [ ! -d "$dir" ]; then
+        return 1
+    fi
+
+    (
+        cd "$dir" 2>/dev/null && pwd -P
+    )
+}
+
+write_config_path() {
+    local dir="$1"
+    mkdir -p "$CONFIG_DIR" || return 1
+    printf '%s\n' "$dir" > "$CONFIG_FILE"
+}
+
+read_config_path() {
+    if [ ! -f "$CONFIG_FILE" ]; then
+        error "config not found at $CONFIG_FILE"
+        return 1
+    fi
+
+    local configured
+    configured=$(head -n 1 "$CONFIG_FILE")
+    if [ -z "$configured" ]; then
+        error "config file is empty: $CONFIG_FILE"
+        return 1
+    fi
+
+    printf '%s\n' "$configured"
+}
+
+cmd_set() {
+    local filepath="$1"
+    if [ -z "$filepath" ]; then
+        usage
+        exit 64
+    fi
+
+    if [ ! -f "$filepath" ]; then
+        error "file not found: $filepath"
+        exit 1
+    fi
+
+    require_command awww
+    awww img "$filepath" -a -t none
+}
+
+cmd_set_path() {
+    local dir="$1"
+    local normalized
+
+    if [ -z "$dir" ]; then
+        usage
+        exit 64
+    fi
+
+    normalized=$(normalize_dir "$dir") || {
+        error "directory not found: $dir"
+        exit 1
+    }
+
+    write_config_path "$normalized" || {
+        error "failed to write config: $CONFIG_FILE"
+        exit 1
+    }
+
+    echo "Configured wallpaper directory: $normalized"
+}
+
+cmd_get_path() {
+    read_config_path || exit 1
+}
+
+cmd_start_daemon() {
+    require_command awww-daemon
+    awww-daemon
+}
+
+cmd_list_files() {
+    local dir
+    dir=$(read_config_path) || exit 1
+
+    if [ ! -d "$dir" ]; then
+        error "configured directory does not exist: $dir"
+        exit 1
+    fi
+
+    find "$dir" -maxdepth 1 -type f | sort
+}
+
+if [ "$#" -eq 0 ]; then
+    cmd_list_files
+    exit $?
+fi
+
+case "$1" in
+    set)
+        shift
+        cmd_set "$1"
+        ;;
+    set-path)
+        shift
+        cmd_set_path "$1"
+        ;;
+    get-path)
+        cmd_get_path
+        ;;
+    start-daemon)
+        cmd_start_daemon
+        exit $?
+        ;;
+    -h|--help|help)
+        usage
+        exit 0
+        ;;
+    *)
+        usage
+        exit 64
+        ;;
+esac

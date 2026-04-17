@@ -1,0 +1,100 @@
+// -*- mode: jsonc -*-
+{
+    "layer": "top",
+    "position": "top",
+    "height": 32, // Waybar height (to be removed for auto height)
+    "spacing": 4, // Gaps between modules (4px)
+    // Choose the order of the modules
+    "modules-left": [
+        "custom/main-menu",
+        "custom/app-launcher",
+        "niri/workspaces"
+    ],
+    "modules-center": [
+        "cpu",
+        "memory"
+    ],
+    "modules-right": [
+        //"tray",
+        "bluetooth",
+        "pulseaudio",
+        "network",
+        "clock",
+        "custom/session"
+    ],
+    //Modules configuration
+    "custom/main-menu": {
+        "format": "",
+        "on-click": "menu-global",
+        "tooltip-format": "Main Menu: Super + Alt + Space"
+    },
+    "custom/app-launcher": {
+        "format": "",
+        "on-click": "fuzzel",
+        "tooltip-format": "App Launcher: Super + Space"
+    },
+    "niri/workspaces": {
+        "on-click": "activate",
+        "cursor": true
+    },
+    //"tray": {
+    //    // "icon-size": 21,
+    //    "spacing": 10
+    //},
+    "bluetooth": {
+        "format": "",
+        "format-off": "󰂲",
+        "format-disabled": "󰂲",
+        "format-connected": "󰂱",
+        "format-no-controller": "",
+        "tooltip-format": "Devices connected: {num_connections}",
+        "on-click": "open-terminal-dialog bluetui"
+    },
+    "clock": {
+        "format": "{:%H:%M}",
+        "tooltip-format": "<span>{calendar}</span>",
+        "calendar": {
+            "mode": "month",
+            "format": {
+                "months": "<span color='#ff6699'><b>{}</b></span>",
+                "days": "<span color='#cdd6f4'><b>{}</b></span>",
+                "weekdays": "<span color='#7CD37C'><b>{}</b></span>",
+                "today": "<span color='#ffcc66'><b>{}</b></span>"
+            }
+        }
+    },
+    "cpu": {
+        "interval": 2,
+        "format": " {usage:>2}%",
+        "on-click": "open-terminal-dialog btop"
+    },
+    "memory": {
+        "interval": 2,
+        "format": " {used:>2}G",
+        "on-click": "open-terminal-dialog btop"
+    },
+    "network": {
+        "format-wifi": "",
+        "format-ethernet": "",
+        "format-linked": "",
+        "format-disconnected": "⚠",
+        "tooltip-format": "Id: {essid}\nSignal: {signalStrength}%\nIP: {ipaddr}",
+        "on-click": "open-terminal-dialog impala"
+    },
+    "pulseaudio": {
+        "format": "{icon}",
+        "on-click": "open-terminal-dialog wiremix --tab output",
+        "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+        "tooltip-format": "Playing at {volume}%",
+        "scroll-step": 5,
+        "format-muted": "",
+        "format-icons": {
+            "default": ["", "", ""]
+        }
+    },
+    "custom/session": {
+        "format" : "",
+		"tooltip-format": "Session Actions: XF86Sleep",
+        "on-click": "menu-global session"
+    }
+}

@@ -1,0 +1,17 @@
+    window-rule {
+        geometry-corner-radius 6 // Set every window radius to 6
+        clip-to-geometry true
+        //open-maximized true
+    }
+
+    window-rule {
+        match title="-floating-dialog*"
+        open-floating true
+        default-column-width { proportion 0.4; }
+        default-window-height { proportion 0.6; }
+    }
+
+    window-rule {
+        match app-id="org.gnome.Showtime"
+        open-floating true
+    }

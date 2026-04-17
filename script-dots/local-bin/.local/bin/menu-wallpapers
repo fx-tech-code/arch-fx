@@ -1,0 +1,158 @@
+#!/bin/bash
+
+# Wallpaper Menu
+# Select and apply wallpapers using awww
+
+THUMBNAIL_DIR="$HOME/.cache/wallpapers/thumbnails"
+
+# Ensure cache directory exists
+mkdir -p "$THUMBNAIL_DIR"
+
+# Create or update a PNG thumbnail for a wallpaper file
+thumbnail_path() {
+    local file="$1"
+    local name
+    local thumb
+    name=$(basename "$file")
+    thumb="$THUMBNAIL_DIR/${name%.*}.png"
+
+    if [ -f "$thumb" ] && [ "$thumb" -nt "$file" ]; then
+        printf '%s' "$thumb"
+        return
+    fi
+
+    if command -v ffmpegthumbnailer >/dev/null 2>&1; then
+        ffmpegthumbnailer -i "$file" -o "$thumb" -s 128 -f >/dev/null 2>&1
+    elif command -v convert >/dev/null 2>&1; then
+        convert "$file" -thumbnail 128x128^ -gravity center -extent 128x128 "$thumb" >/dev/null 2>&1
+    else
+        return 1
+    fi
+
+    if [ -f "$thumb" ]; then
+        printf '%s' "$thumb"
+        return
+    fi
+
+    return 1
+}
+
+menu_icon_path() {
+    local file="$1"
+    case "${file##*.}" in
+        png|PNG|svg|SVG)
+            printf '%s' "$file"
+            ;;
+        *)
+            thumbnail_path "$file"
+            ;;
+    esac
+}
+
+get_wallpaper_path() {
+    local path
+
+    if command -v wallpapr >/dev/null 2>&1; then
+        path="$(wallpapr get-path 2>/dev/null)"
+    else
+        return 1
+    fi
+
+    if [ -n "$path" ] && [ -d "$path" ]; then
+        printf '%s' "$path"
+        return 0
+    fi
+
+    return 1
+}
+
+show_config_hint() {
+    local msg="No wallpaper directory configured. Run: wallpapr set-path <directory>"
+
+    if command -v notify-send >/dev/null 2>&1; then
+        notify-send "Wallpapr" "$msg"
+    else
+        echo "$msg" >&2
+    fi
+}
+
+# Show main menu
+show_main_menu() {
+    local selected="$1"
+    local count=0
+    local max_width=0
+    local options_width
+    local wallpaper_path
+    local filename
+    local filepath
+    local iconpath
+    local selection
+    
+    wallpaper_path=$(get_wallpaper_path)
+    if [ ! -d "$wallpaper_path" ]; then
+        show_config_hint
+        exit 1
+    fi
+
+    if [ -d "$wallpaper_path" ]; then
+        while IFS= read -r file; do
+            if [ -f "$file" ]; then
+                ((count++))
+                filename=$(basename "$file")
+                (( ${#filename} > max_width )) && max_width=${#filename}
+            fi
+        done < <(find "$wallpaper_path" -maxdepth 1 -type f | sort)
+    fi
+
+    (( count > 20 )) && count=20
+    options_width=$(( max_width + 12 ))
+    (( options_width > 80 )) && options_width=80
+
+    local tmpfile
+    tmpfile=$(mktemp)
+
+    {
+        if [ -d "$wallpaper_path" ]; then
+            while IFS= read -r file; do
+                if [ -f "$file" ]; then
+                    filename=$(basename "$file")
+                    iconpath=$(menu_icon_path "$file")
+                    if [ -n "$iconpath" ] && [ -f "$iconpath" ]; then
+                        printf "%s\0icon\x1f%s\n" "$filename" "$iconpath"
+                    else
+                        printf "%s\n" "$filename"
+                    fi
+                fi
+            done < <(find "$wallpaper_path" -maxdepth 1 -type f | sort)
+        fi
+    } | fuzzel --dmenu --hide-prompt --lines=$count --width=$options_width --line-height 60 --select="$selected" > "$tmpfile"
+
+    selection=""
+    if [ -s "$tmpfile" ]; then
+        IFS= read -r selection < "$tmpfile"
+    fi
+    rm -f "$tmpfile"
+
+    # Exit on ESC (empty selection)
+    if [ -z "$selection" ]; then
+        exit 0
+    fi
+    
+    case "$selection" in
+        *)
+            # Extract wallpaper filename and apply
+            if [ -d "$wallpaper_path" ]; then
+                filename="$selection"
+                filepath="$wallpaper_path/$filename"
+                if [ -f "$filepath" ]; then
+                    wallpapr set "$filepath" >/dev/null 2>&1
+                fi
+            fi
+            # Keep menu open and reselect the same item
+            show_main_menu "$selection"
+            ;;
+    esac
+}
+
+# Start with main menu
+show_main_menu

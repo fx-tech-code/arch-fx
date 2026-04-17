@@ -1,0 +1,298 @@
+#!/bin/bash
+
+MENU_WIDTH_PADDING=2
+
+# ----------------------------------------------- MENU FUNCTIONS ------------------------------------------------ #
+back_to() {
+  local parent_menu="$1"
+
+  if [[ $BACK_TO_EXIT == "true" ]]; then
+    exit 0
+  elif [[ -n $parent_menu ]]; then
+    "$parent_menu"
+  else
+    show_main_menu
+  fi
+}
+
+toggle_existing_menu() {
+  if pgrep -f "fuzzel.*--dmenu" >/dev/null; then
+    fuzzel --close >/dev/null 2>&1
+    exit 0
+  fi
+}
+
+menu() {
+  local prompt="$1"
+  local options="$2"
+  local extra="$3"
+  local preselect="$4"
+  local options_count options_width
+
+  read -r -a args <<<"$extra"
+
+  if [[ -n $preselect ]]; then
+    local index
+    index=$(echo -e "$options" | grep -nxF "$preselect" | cut -d: -f1)
+    if [[ -n $index ]]; then
+      args+=("-c" "$index")
+    fi
+  fi
+
+  options_count=$(printf "%b" "$options" | awk 'END { print (NR ? NR : 1) }')
+  (( options_count > 20 )) && options_count=20
+
+  options_width=$(printf "%b" "$options" | awk 'length > max { max = length } END { print (max ? max : 1) }')
+  options_width=$((options_width + MENU_WIDTH_PADDING))
+  (( options_width > 80 )) && options_width=80
+
+  echo -e "$options" | fuzzel --dmenu -p "${prompt:+$prompt…}" --lines "$options_count" --width "$options_width" "${args[@]}" 2>/dev/null
+}
+
+go_to_menu() {
+  case "${1,,}" in
+  *apps*) fuzzel ;;
+  *tools*) show_tools_menu ;;
+  *keybindings*) cmd_show-keybindings ;;
+  *style*) show_style_menu ;;
+  *setup*) show_setup_menu ;;
+  *install*) show_install_menu ;;
+  *remove*) show_remove_menu ;;
+  *system*) show_system_menu ;;
+  *session*) show_session_menu ;;
+  esac
+}
+
+# ----------------------------------------------- CMD FUNCTIONS ------------------------------------------------ #
+
+cmd_screenshot() {
+  pkill hyprshot || hyprshot -m output
+}
+
+cmd_pick-color() {
+  pkill hyprpicker || hyprpicker -a
+}
+
+cmd_create-bootable-usb() {
+  local selected_file=""
+
+  if command -v zenity >/dev/null 2>&1; then
+    selected_file=$(zenity --file-selection --title="Select ISO file" --file-filter="*.iso")
+  else
+    notify-send "File picker not found" "Please install 'zenity' to use this feature."
+    return
+  fi
+
+  if [[ -n $selected_file ]]; then
+    open-terminal-dialog caligula burn "$selected_file"
+  else
+    notify-send "No file selected" "Please select an ISO file to create a bootable USB."
+  fi
+}
+
+cmd_show-keybindings() {
+  menu-keybindings
+}
+
+cmd_open-theme-config() {
+  cmd_open-folder-in-editor "$HOME/.config/global-theme"
+}
+
+cmd_show-wallpapers() {
+  menu-wallpapers
+}
+
+cmd_launch-audio() {
+  open-terminal-dialog wiremix --tab output
+}
+
+cmd_launch-wifi() {
+  open-terminal-dialog impala
+}
+
+cmd_launch-bluetooth() {
+  open-terminal-dialog bluetui
+}
+
+cmd_show-services() {
+  open-terminal-dialog systemd-manager-tui
+}
+
+cmd_open-wallpaper-folder() {
+  local wallpaper_path
+  wallpaper_path=$(get_wallpaper_path)
+  cmd_open-folder "$wallpaper_path"
+}
+
+cmd_show-configs() {
+  cmd_open-folder-in-editor "$HOME/.config/"
+}
+
+cmd_show-scripts() {  
+  cmd_open-folder-in-editor "$HOME/.local/bin/"
+}
+
+cmd_show-about() {
+  open-terminal-dialog fish -ic "fastfetch; exec fish"
+}
+
+cmd_update-system() {
+  open-terminal-dialog fish -ic "update; exec fish"
+}
+
+cmd_cleanup-system() {
+  open-terminal-dialog fish -ic "cleanup; exec fish"
+}
+
+cmd_install-package() {
+  open-terminal-dialog omarchy-pkg-install
+}
+
+cmd_install-aur-package() {
+  open-terminal-dialog omarchy-pkg-aur-install
+}
+
+cmd_remove-package() {
+  open-terminal-dialog omarchy-pkg-remove
+}
+
+cmd_install-aur() {
+  omarchy-pkg-aur-install
+}
+
+cmd_open-folder() {
+  local folder="$1"
+  if [[ -n $folder ]]; then
+    if command -v xdg-open >/dev/null 2>&1; then
+      xdg-open "$folder" >/dev/null 2>&1 &
+    elif command -v gio >/dev/null 2>&1; then
+      gio open "$folder" >/dev/null 2>&1 &
+    else
+      notify-send "File manager launcher not found" "Please install 'xdg-utils' or 'glib2' to open folders."
+    fi
+  else
+    notify-send "Folder not found" "The folder does not exist."
+  fi
+}
+
+cmd_open-folder-in-editor() {
+  local folder="$1"
+  if [[ -d $folder ]]; then
+    code --new-window "$folder"
+  else
+    notify-send "Folder not found" "The folder '$folder' does not exist."
+  fi
+}
+
+get_wallpaper_path() {
+    local path
+
+  if command -v wallpapr >/dev/null 2>&1; then
+    path="$(wallpapr get-path 2>/dev/null)"
+    else
+        return 1
+    fi
+
+    if [ -n "$path" ] && [ -d "$path" ]; then
+        printf '%s' "$path"
+        return 0
+    fi
+
+    return 1
+}
+
+# ----------------------------------------------- MENUS ------------------------------------------------ #
+
+show_main_menu() {
+  local options="󰀻  Apps\n󰧑  Tools\n  Keybindings\n  Style\n  Setup\n󰉉  Install\n󰭌  Remove\n󰍹  System\n󰐥  Session"
+
+  go_to_menu "$(menu "" "$options")"
+}
+
+show_tools_menu() {
+  local options="  Take Screenshot\n󰃉  Pick Color\n󰕓  Create bootable USB"
+
+  case $(menu "" "$options") in
+  *Screenshot*) cmd_screenshot ;;
+  *Color*) cmd_pick-color ;;
+  *USB*) cmd_create-bootable-usb ;;
+  *) back_to show_main_menu ;;
+  esac
+}
+
+show_style_menu() {
+  local options="󰏘  Theme\n󰸉  Wallpaper"
+
+  case $(menu "" "$options") in
+  *Theme*) cmd_open-theme-config ;;
+  *Wallpaper*) cmd_show-wallpapers ;;
+  *) back_to show_main_menu ;;
+  esac
+}
+
+show_setup_menu() {
+  local options="󰏘  Audio\n󰤨  Wifi\n󰂯  Bluetooth\n󰒓  Services\n󰸉  Wallpaper Folder\n󰌅  Configs\n󰯂  Scripts"
+
+  case $(menu "" "$options") in
+  *Audio*) cmd_launch-audio ;;
+  *Wifi*) cmd_launch-wifi ;;
+  *Bluetooth*) cmd_launch-bluetooth ;;
+  *Services*) cmd_show-services ;;
+  *Wallpaper*) cmd_open-wallpaper-folder ;;
+  *Configs*) cmd_show-configs ;;
+  *Scripts*) cmd_show-scripts ;;
+  *) back_to show_main_menu ;;
+  esac
+}
+
+show_install_menu() {
+  local options="󰣇  Package\n󰣇  AUR"
+
+  case $(menu "" "$options") in
+  *Package*) cmd_install-package ;;
+  *AUR*) cmd_install-aur-package ;;
+  *) back_to show_main_menu ;;
+  esac
+}
+
+show_remove_menu() {
+  local options="󰣇  Package"
+
+  case $(menu "" "$options") in
+  *Package*) cmd_remove-package ;;
+  *) back_to show_main_menu ;;
+  esac
+}
+
+show_system_menu() {
+  local options="  About\n  Update\n  Cleanup"
+  
+  case $(menu "" "$options") in
+  *About*) cmd_show-about ;;
+  *Update*) cmd_update-system ;;
+  *Cleanup*) cmd_cleanup-system ;;
+  *) back_to show_main_menu ;;
+  esac
+}
+
+show_session_menu() {
+  local options="  Lock\n󰗽  Logout\n󰑓  Reboot\n󰐥  Shutdown"
+
+  case $(menu "" "$options") in
+  *Lock*) hyprlock ;;
+  *Logout*) niri msg action quit --skip-confirmation ;;
+  *Reboot*) systemctl reboot ;;
+  *Shutdown*) systemctl poweroff ;;
+  *) back_to show_main_menu ;;
+  esac
+}
+
+# ----------------------------------------------- MAIN ENTRY POINT ------------------------------------------------ #
+toggle_existing_menu
+
+if [[ -n $1 ]]; then
+  BACK_TO_EXIT=true
+  go_to_menu "$1"
+else
+  show_main_menu
+fi

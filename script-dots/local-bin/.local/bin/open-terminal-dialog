@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Open a command in a floating terminal dialog.
+# If a window with the same title is already open, focus it instead.
+# Usage: open-terminal-dialog <command> [args...]
+
+set -o pipefail
+
+if [ "$#" -lt 1 ]; then
+    echo "Usage: $(basename "$0") <command> [args...]" >&2
+    exit 64
+fi
+
+command_name=$(basename -- "$1")
+title="${command_name}-floating-dialog"
+
+# If a window with this title is already open, focus it and exit.
+if command -v niri >/dev/null 2>&1; then
+    window_id=$(niri msg -j windows 2>/dev/null \
+        | python3 -c "
+import sys, json
+wins = json.load(sys.stdin)
+for w in wins:
+    if w.get('title') == '$title':
+        print(w['id'])
+        break
+" 2>/dev/null)
+    if [ -n "$window_id" ]; then
+        niri msg action focus-window --id "$window_id"
+        exit 0
+    fi
+fi
+
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+
+exec "$script_dir/open-terminal" --title "$title" "$@"

@@ -1,0 +1,76 @@
+Install fx Arch
+============================================
+
+Install git and ssh:
+------------------ 
+sudo pacman -S git openssh
+
+Install yay:
+------------------
+mkdir /tmp/yay
+cd /tmp/yay
+sudo pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
+cd ~
+
+Install and configure automount:
+------------------
+sudo pacman -S udiskie
+('udiskie --automount' is started in Niri autostart)
+
+Install Base-Packages:
+------------------
+sudo pacman -S nano fzf btop fastfetch accountsservice btrfs-assistant btrfs-progs
+
+Install Terminal and Shell:
+------------------
+sudo pacman -S kitty fish
+
+Install Browsers:
+------------------
+sudo pacman -S firefox          -> Choose noto-fonts (2)
+yay -S zen-browswer-bin
+
+Install File Explorers: 
+-----------------------
+sudo pacman -S yazi nautilus
+
+Install Tool Packages:
+------------------
+yay -S systemd-manager-tui-bin
+sudo pacman -S waybar awww mako caligula gum hypridle hyprlock hyprpicker hyprshot impala bluetui wiremix fuzzel nwg-look stow polkit-gnome
+
+Install ly:
+-----------------
+sudo pacman -S ly
+sudo systemctl enable ly@tty1
+
+Install niri:
+-----------------
+sudo pacman -S niri        -> Choose xdg-desktop-portal-gtk
+
+Install GTK Themes:
+------------------
+sudo pacman -S adw-gtk-theme
+gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark'
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+(or use nwg-look)
+
+Install optional Packages:
+-----------------
+yay -S visual-studio-code-bin
+sudo -S gnome-calculator gnome-text-editor loupe libreoffice-still showtime steam thunderbird wine
+
+Bring in dot-files: 
+----------------
+(ssh private key needed, if permissions problem: chmod 400 ~/.ssh/[key-file])
+mkdir ~/dot-files
+cd ~/dot-files
+git clone git@github.com:fx-tech-code/dotfiles-niri.git
+cd dotfiles-niri
+stow *
+
+Post Install:
+--------------------
+chsh -s /bin/fish
+sudo echo 'export PATH="$HOME/.local/bin:$PATH"' > /etc/profile.d/local-bin.sh
+

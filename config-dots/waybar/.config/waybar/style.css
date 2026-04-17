@@ -1,0 +1,82 @@
+/* Include global-theme settings */
+@import "/home/fx/.config/global-theme/waybar.css";
+
+* {
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+}
+
+window#waybar {
+  background: #232323;       /* Fallback background color */ 
+  background: @bg_color;
+  color: white;                /* Fallback color */
+  color: @color;
+  font-size: 13px;
+  font-family: 'monospace';
+}
+
+.modules-left {
+  margin-left: 10px;
+}
+
+.modules-right {
+  margin-right: 10px;
+}
+
+#custom-session,
+#tray,
+#bluetooth,
+#network,
+#pulseaudio,
+#cpu,
+#memory,
+#clock,
+#workspaces
+{
+  margin: 0 4px;
+  min-width: 12px;
+}
+
+
+#custom-session,
+#tray,
+#bluetooth,
+#network,
+#pulseaudio
+{
+  font-size: 15px;
+}
+
+
+#custom-main-menu
+{
+  margin: 0 8px;
+  font-size: 16px;
+}
+
+#workspaces button {
+  padding: 0;
+  margin: 6px 2px;
+  min-width: 30px;
+  opacity: 0.5;
+  background: darkgrey;        
+  color: black;                   /* Fallback color */
+  color: @accent_color;
+  font-size: 10px;
+  border-radius: 2px;
+}
+
+#workspaces button.empty {
+  opacity: 0.2;
+}
+
+#workspaces button.active {
+  background: #3daee9;            /* Fallback background color */
+  background: @accent_bg_color;
+  opacity: 1;
+}
+
+#workspaces button:hover {
+  opacity: 1;
+}

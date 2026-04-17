@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Open a command in a terminal with a custom title.
+# Usage: open-terminal [--title <title>] <command> [args...]
+
+set -o pipefail
+
+title=""
+terminal="${TERMINAL:-kitty}"
+
+if [ "$1" = "--title" ]; then
+    if [ -z "$2" ]; then
+        echo "Error: --title requires a value." >&2
+        echo "Usage: $(basename "$0") [--title <title>] <command> [args...]" >&2
+        exit 64
+    fi
+    title="$2"
+    shift 2
+fi
+
+if [ "$#" -lt 1 ]; then
+    echo "Usage: $(basename "$0") [--title <title>] <command> [args...]" >&2
+    exit 64
+fi
+
+if ! command -v "$terminal" >/dev/null 2>&1; then
+    echo "Error: $terminal is required but was not found in PATH." >&2
+    exit 127
+fi
+
+if [ -n "$title" ]; then
+    title_args=(--title "$title")
+else
+    title_args=()
+fi
+
+exec "$terminal" "${title_args[@]}" -e "$@"

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Is an alias for stow, but with a predefined target of $HOME.
+
+exec stow --target "$HOME" "$@"
