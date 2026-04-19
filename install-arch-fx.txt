@@ -28,7 +28,7 @@ yay -S limine-snapper-sync
 sudo limine-update && limine-snapper-sync
 sudo mv /boot/limine/limine.conf /boot/limine/limine.conf.backup
 
-Install ly:
+Install Login-Manager:
 -----------------
 sudo pacman -S ly
 sudo systemctl enable ly@tty1
@@ -37,13 +37,13 @@ Install Terminal and Shell:
 ------------------
 sudo pacman -S kitty fish
 
-Install niri:
+Install Niri:
 -----------------
 sudo pacman -S niri        	-> Choose xdg-desktop-portal-gtk
 
 Install Tool Packages:
 ------------------
-yay -S systemd-manager-tui-bin
+yay -S systemd-manager-tui-bin visual-studio-code-bin
 sudo pacman -S waybar awww mako caligula gum hypridle hyprlock hyprpicker hyprshot impala bluetui wiremix fuzzel nwg-look stow polkit-gnome
 
 Install GTK Themes:
@@ -64,8 +64,7 @@ sudo pacman -S yazi nautilus
 
 Install optional Packages:
 -----------------
-yay -S visual-studio-code-bin
-sudo -S gnome-calculator gnome-text-editor loupe libreoffice-still showtime thunderbird wine
+sudo -S gnome-calculator gnome-text-editor loupe libreoffice-still showtime thunderbird
 
 Bring in dot-files: 
 ----------------
