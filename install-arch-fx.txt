@@ -19,11 +19,39 @@ sudo pacman -S udiskie
 
 Install Base-Packages:
 ------------------
-sudo pacman -S nano fzf btop fastfetch accountsservice btrfs-assistant btrfs-progs
+sudo pacman -S nano fzf btop fastfetch accountsservice 
+
+Install Btrfs Snapshots:
+--------------------------
+sudo pacman -S btrfs-progs snap-pac btrfs-assistant limine-mkinitcpio-hook
+yay -S limine-snapper-sync
+sudo limine-update && limine-snapper-sync
+sudo mv /boot/limine/limine.conf /boot/limine/limine.conf.backup
+
+Install ly:
+-----------------
+sudo pacman -S ly
+sudo systemctl enable ly@tty1
 
 Install Terminal and Shell:
 ------------------
 sudo pacman -S kitty fish
+
+Install niri:
+-----------------
+sudo pacman -S niri        	-> Choose xdg-desktop-portal-gtk
+
+Install Tool Packages:
+------------------
+yay -S systemd-manager-tui-bin
+sudo pacman -S waybar awww mako caligula gum hypridle hyprlock hyprpicker hyprshot impala bluetui wiremix fuzzel nwg-look stow polkit-gnome
+
+Install GTK Themes:
+------------------
+sudo pacman -S adw-gtk-theme
+gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark'
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+(or use nwg-look)
 
 Install Browsers:
 ------------------
@@ -34,31 +62,10 @@ Install File Explorers:
 -----------------------
 sudo pacman -S yazi nautilus
 
-Install Tool Packages:
-------------------
-yay -S systemd-manager-tui-bin
-sudo pacman -S waybar awww mako caligula gum hypridle hyprlock hyprpicker hyprshot impala bluetui wiremix fuzzel nwg-look stow polkit-gnome
-
-Install ly:
------------------
-sudo pacman -S ly
-sudo systemctl enable ly@tty1
-
-Install niri:
------------------
-sudo pacman -S niri        -> Choose xdg-desktop-portal-gtk
-
-Install GTK Themes:
-------------------
-sudo pacman -S adw-gtk-theme
-gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark'
-gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-(or use nwg-look)
-
 Install optional Packages:
 -----------------
 yay -S visual-studio-code-bin
-sudo -S gnome-calculator gnome-text-editor loupe libreoffice-still showtime steam thunderbird wine
+sudo -S gnome-calculator gnome-text-editor loupe libreoffice-still showtime thunderbird wine
 
 Bring in dot-files: 
 ----------------
@@ -74,3 +81,8 @@ Post Install:
 chsh -s /bin/fish
 sudo echo 'export PATH="$HOME/.local/bin:$PATH"' > /etc/profile.d/local-bin.sh
 
+Install Steam: 
+---------------------
+Ensure multilib is enabled for pacman: /etc/pacman.conf
+sudo pacman -S xorg-xwayland xwayland-satellite steam
+Ensure gpu drivers are installed

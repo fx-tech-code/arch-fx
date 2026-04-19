@@ -73,6 +73,10 @@ cmd_pick-color() {
   pkill hyprpicker || hyprpicker -a
 }
 
+cmd_pick-window-info() {
+  echo "This is not implemented yet. Please run the window info command for your picker in a terminal."
+}
+
 cmd_create-bootable-usb() {
   local selected_file=""
 
@@ -122,6 +126,28 @@ cmd_open-wallpaper-folder() {
   local wallpaper_path
   wallpaper_path=$(get_wallpaper_path)
   cmd_open-folder "$wallpaper_path"
+}
+
+cmd_set-wallpaper-folder() {
+  local selected_folder=""
+
+  if command -v zenity >/dev/null 2>&1; then
+    selected_folder=$(zenity --file-selection --title="Select Wallpaper Folder" --directory)
+  else
+    notify-send "Folder picker not found" "Please install 'zenity' to use this feature."
+    return
+  fi
+
+  if [[ -n $selected_folder ]]; then
+    if command -v wallpapr >/dev/null 2>&1; then
+      wallpapr set-path "$selected_folder"
+      notify-send "Wallpaper folder updated" "The wallpaper folder has been set to '$selected_folder'."
+    else
+      notify-send "wallpapr not found" "Please install 'wallpapr' to set the wallpaper folder."
+    fi
+  else
+    notify-send "No folder selected" "Please select a folder to set as the wallpaper directory."
+  fi
 }
 
 cmd_show-configs() {
@@ -210,11 +236,12 @@ show_main_menu() {
 }
 
 show_tools_menu() {
-  local options="  Take Screenshot\n󰃉  Pick Color\n󰕓  Create bootable USB"
+  local options="  Take Screenshot\n󰃉  Pick Color\n  Pick Window Info\n󰕓  Create bootable USB"
 
   case $(menu "" "$options") in
   *Screenshot*) cmd_screenshot ;;
   *Color*) cmd_pick-color ;;
+  *Window*) cmd_pick-window-info ;;
   *USB*) cmd_create-bootable-usb ;;
   *) back_to show_main_menu ;;
   esac
@@ -231,14 +258,15 @@ show_style_menu() {
 }
 
 show_setup_menu() {
-  local options="󰏘  Audio\n󰤨  Wifi\n󰂯  Bluetooth\n󰒓  Services\n󰸉  Wallpaper Folder\n󰌅  Configs\n󰯂  Scripts"
+  local options="󰏘  Audio\n󰤨  Wifi\n󰂯  Bluetooth\n󰒓  Services\n󰸉  Open Wallpaper Folder\n󰸉  Set Wallpaper Folder\n󰌅  Configs\n󰯂  Scripts"
 
   case $(menu "" "$options") in
   *Audio*) cmd_launch-audio ;;
   *Wifi*) cmd_launch-wifi ;;
   *Bluetooth*) cmd_launch-bluetooth ;;
   *Services*) cmd_show-services ;;
-  *Wallpaper*) cmd_open-wallpaper-folder ;;
+  *Open\ Wallpaper\ Folder*) cmd_open-wallpaper-folder ;;
+  *Set\ Wallpaper\ Folder*) cmd_set-wallpaper-folder ;;
   *Configs*) cmd_show-configs ;;
   *Scripts*) cmd_show-scripts ;;
   *) back_to show_main_menu ;;

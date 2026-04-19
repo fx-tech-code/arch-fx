@@ -16,7 +16,8 @@ function fish_prompt
     set -l c_err (set_color red)
 
     # First line: current directory + git info
-    echo -n $c_path(prompt_pwd)
+    #echo -n $c_path(pwd)
+    echo -n $c_path(string replace --regex "^$HOME" "~" $PWD)
 
     if command -sq git; and command git rev-parse --is-inside-work-tree >/dev/null 2>&1
         set -l branch (command git symbolic-ref --quiet --short HEAD 2>/dev/null; or command git rev-parse --short HEAD 2>/dev/null)
