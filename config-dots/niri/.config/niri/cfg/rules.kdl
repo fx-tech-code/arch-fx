@@ -15,3 +15,8 @@
         match app-id="org.gnome.Showtime"
         open-floating true
     }
+
+    window-rule {
+        match app-id="steam"
+        open-floating true
+    }
