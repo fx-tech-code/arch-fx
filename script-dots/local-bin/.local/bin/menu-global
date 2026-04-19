@@ -74,7 +74,10 @@ cmd_pick-color() {
 }
 
 cmd_pick-window-info() {
-  echo "This is not implemented yet. Please run the window info command for your picker in a terminal."
+  local selected_window=""
+
+  selected_window=$(niri msg pick-window)
+  open-terminal-dialog --keep-open echo "$selected_window"
 }
 
 cmd_create-bootable-usb() {
@@ -236,7 +239,7 @@ show_main_menu() {
 }
 
 show_tools_menu() {
-  local options="  Take Screenshot\n󰃉  Pick Color\n  Pick Window Info\n󰕓  Create bootable USB"
+  local options="  Take Screenshot\n󰃉  Pick Color\n  Get Window Info\n󰕓  Create bootable USB"
 
   case $(menu "" "$options") in
   *Screenshot*) cmd_screenshot ;;

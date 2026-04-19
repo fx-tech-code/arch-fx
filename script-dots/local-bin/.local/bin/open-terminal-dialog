@@ -2,12 +2,35 @@
 
 # Open a command in a floating terminal dialog.
 # If a window with the same title is already open, focus it instead.
-# Usage: open-terminal-dialog <command> [args...]
+# Usage: open-terminal-dialog [--keep-open] <command> [args...]
 
 set -o pipefail
 
+keep_open=0
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --keep-open)
+            keep_open=1
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
+        -* )
+            echo "Error: Unknown option: $1" >&2
+            echo "Usage: $(basename "$0") [--keep-open] <command> [args...]" >&2
+            exit 64
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
 if [ "$#" -lt 1 ]; then
-    echo "Usage: $(basename "$0") <command> [args...]" >&2
+    echo "Usage: $(basename "$0") [--keep-open] <command> [args...]" >&2
     exit 64
 fi
 
@@ -32,5 +55,9 @@ for w in wins:
 fi
 
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+
+if [ "$keep_open" -eq 1 ]; then
+    exec "$script_dir/open-terminal" --title "$title" --keep-open "$@"
+fi
 
 exec "$script_dir/open-terminal" --title "$title" "$@"

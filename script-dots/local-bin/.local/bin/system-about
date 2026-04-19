@@ -1,5 +1,5 @@
 #!/bin/bash
 
 # Shows information about the system using fastfetch.
-fastfetch
+fastfetch --logo none
 terminal-show-done

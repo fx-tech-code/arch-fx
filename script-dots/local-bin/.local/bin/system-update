@@ -1,5 +1,10 @@
 #!/bin/bash
 
 # Updates all packages and AUR packages using pacman and yay.
-echo "This is not implemented yet. Please run the update command for your package manager in a terminal."
-terminal-show-done
+echo "Updating packages..."
+sudo pacman -Syu
+echo "Updating AUR packages..."
+yay -Syu
+
+#call cleanup after update
+system-cleanup

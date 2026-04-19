@@ -1,25 +1,46 @@
 #!/bin/bash
 
 # Open a command in a terminal with a custom title.
-# Usage: open-terminal [--title <title>] <command> [args...]
+# Usage: open-terminal [--title <title>] [--keep-open] <command> [args...]
 
 set -o pipefail
 
 title=""
+keep_open=0
 terminal="${TERMINAL:-kitty}"
 
-if [ "$1" = "--title" ]; then
-    if [ -z "$2" ]; then
-        echo "Error: --title requires a value." >&2
-        echo "Usage: $(basename "$0") [--title <title>] <command> [args...]" >&2
-        exit 64
-    fi
-    title="$2"
-    shift 2
-fi
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --title)
+            if [ -z "$2" ]; then
+                echo "Error: --title requires a value." >&2
+                echo "Usage: $(basename "$0") [--title <title>] [--keep-open] <command> [args...]" >&2
+                exit 64
+            fi
+            title="$2"
+            shift 2
+            ;;
+        --keep-open)
+            keep_open=1
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
+        -* )
+            echo "Error: Unknown option: $1" >&2
+            echo "Usage: $(basename "$0") [--title <title>] [--keep-open] <command> [args...]" >&2
+            exit 64
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
 
 if [ "$#" -lt 1 ]; then
-    echo "Usage: $(basename "$0") [--title <title>] <command> [args...]" >&2
+    echo "Usage: $(basename "$0") [--title <title>] [--keep-open] <command> [args...]" >&2
     exit 64
 fi
 
@@ -32,6 +53,17 @@ if [ -n "$title" ]; then
     title_args=(--title "$title")
 else
     title_args=()
+fi
+
+if [ "$keep_open" -eq 1 ]; then
+    exec "$terminal" "${title_args[@]}" -e bash -lc '
+"$@"
+status=$?
+if command -v terminal-show-done >/dev/null 2>&1; then
+    terminal-show-done
+fi
+exit "$status"
+' _ "$@"
 fi
 
 exec "$terminal" "${title_args[@]}" -e "$@"
