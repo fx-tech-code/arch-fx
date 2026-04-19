@@ -1,0 +1,133 @@
+# Install fx Arch
+
+## Install git and ssh
+
+```bash
+sudo pacman -S git openssh
+```
+
+## Install yay
+
+```bash
+mkdir /tmp/yay
+cd /tmp/yay
+sudo pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
+cd ~
+```
+
+## Install and configure automount
+
+```bash
+sudo pacman -S udiskie
+```
+
+`udiskie --automount` is started in Niri autostart.
+
+## Install Base Packages
+
+```bash
+sudo pacman -S nano fzf btop fastfetch accountsservice
+```
+
+## Install Btrfs Snapshots
+
+```bash
+sudo pacman -S btrfs-progs snap-pac btrfs-assistant limine-mkinitcpio-hook
+yay -S limine-snapper-sync
+sudo limine-update && limine-snapper-sync
+sudo mv /boot/limine/limine.conf /boot/limine/limine.conf.backup
+```
+
+## Install Login-Manager
+
+```bash
+sudo pacman -S ly
+sudo systemctl enable ly@tty1
+```
+
+## Install Terminal and Shell
+
+```bash
+sudo pacman -S kitty fish
+```
+
+## Install Niri
+
+```bash
+sudo pacman -S niri xdg-desktop-portal-gtk
+```
+
+If prompted, choose `xdg-desktop-portal-gtk`.
+
+## Install Tool Packages
+
+```bash
+yay -S systemd-manager-tui-bin visual-studio-code-bin
+sudo pacman -S waybar awww mako caligula gum hypridle hyprlock hyprpicker hyprshot impala bluetui wiremix fuzzel nwg-look stow polkit-gnome
+```
+
+## Install GTK Themes
+
+```bash
+sudo pacman -S adw-gtk-theme
+gsettings set org.gnome.desktop.interface gtk-theme 'adw-gtk3-dark'
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+```
+
+Or use `nwg-look`.
+
+## Install Browsers
+
+```bash
+sudo pacman -S firefox noto-fonts
+yay -S zen-browser-bin
+```
+
+If prompted for Firefox, choose `noto-fonts (2)`.
+
+## Install File Explorers
+
+```bash
+sudo pacman -S yazi nautilus
+```
+
+## Bring in dotfiles
+
+SSH private key needed. If there is a permissions problem:
+
+```bash
+chmod 400 ~/.ssh/[key-file]
+```
+
+```bash
+cd ~/arch-fx/script-dots
+../deepstow *
+```
+
+```bash
+cd ~/arch-fx/config-dots
+../deepstow *
+```
+
+## Post Install
+
+```bash
+chsh -s /bin/fish
+sudo echo 'export PATH="$HOME/.local/bin:$PATH"' > /etc/profile.d/local-bin.sh
+```
+
+## Install optional Packages
+
+```bash
+sudo pacman -S gnome-calculator gnome-text-editor loupe libreoffice-still showtime thunderbird
+```
+
+## Install Steam
+
+Ensure multilib is enabled for pacman in `/etc/pacman.conf`.
+
+```bash
+sudo pacman -S xorg-xwayland xwayland-satellite steam
+```
+
+Ensure GPU drivers are installed.
