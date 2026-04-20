@@ -54,10 +54,10 @@ sudo pacman -S kitty foot fish
 ## Install Niri
 
 ```bash
-sudo pacman -S niri xdg-desktop-portal-gtk
+sudo pacman -S niri xdg-desktop-portal-gnome
 ```
 
-If prompted, choose `xdg-desktop-portal-gtk`.
+If prompted, choose `xdg-desktop-portal-gnome`.
 
 ## Install Tool Packages
 
