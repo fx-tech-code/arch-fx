@@ -66,6 +66,9 @@ info "Starting from step $START_STEP"
 trap stop_sudo_keepalive EXIT
 start_sudo_keepalive
 
+print_heading 'Installing gum (required for interactive prompts)'
+pacman_install gum
+
 if [[ "$START_STEP" == '14' ]]; then
     run_step "$STEP_14"
     pause_for_completion

@@ -5,6 +5,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/install_helpers.sh"
 
+print_heading 'Step 05: Configure Btrfs snapshots'
+
 pacman_install btrfs-progs snap-pac btrfs-assistant limine-mkinitcpio-hook
 yay_install limine-snapper-sync
 

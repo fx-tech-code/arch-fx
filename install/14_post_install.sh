@@ -5,6 +5,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/install_helpers.sh"
 
+print_heading 'Step 14: Post-install configuration'
+
 require_command fish
 
 fish_path="$(command -v fish)"

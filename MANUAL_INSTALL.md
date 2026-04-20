@@ -63,7 +63,7 @@ If prompted, choose `xdg-desktop-portal-gnome`.
 
 ```bash
 yay -S systemd-manager-tui-bin visual-studio-code-bin
-sudo pacman -S waybar awww mako caligula gum hypridle hyprlock hyprpicker hyprshot impala bluetui wiremix fuzzel nwg-look stow polkit-gnome
+sudo pacman -S waybar awww mako caligula hypridle hyprlock hyprpicker hyprshot impala bluetui wiremix fuzzel nwg-look polkit-gnome gum
 ```
 
 ## Install GTK Themes
@@ -93,10 +93,10 @@ sudo pacman -S yazi nautilus
 
 ## Bring in dotfiles
 
-SSH private key needed. If there is a permissions problem:
+Using stow to manage dotfiles
 
 ```bash
-chmod 400 ~/.ssh/[key-file]
+sudo pacman -S stow
 ```
 
 ```bash
