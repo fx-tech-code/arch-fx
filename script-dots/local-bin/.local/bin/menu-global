@@ -233,13 +233,13 @@ get_wallpaper_path() {
 # ----------------------------------------------- MENUS ------------------------------------------------ #
 
 show_main_menu() {
-  local options="󰀻  Apps\n󰧑  Tools\n  Keybindings\n  Style\n  Setup\n󰉉  Install\n󰭌  Remove\n󰍹  System\n󰐥  Session"
+  local options="󰀻  Apps\n󰧑  Tools\n󰥻  Keybindings\n  Style\n  Setup\n󰉉  Install\n󰭌  Remove\n󰍹  System\n󰐥  Session"
 
   go_to_menu "$(menu "" "$options")"
 }
 
 show_tools_menu() {
-  local options="  Take Screenshot\n󰃉  Pick Color\n  Get Window Info\n󰕓  Create bootable USB"
+  local options="  Take Screenshot\n󰃉  Pick Color\n  Get Window Info\n󰕓  Create bootable USB"
 
   case $(menu "" "$options") in
   *Screenshot*) cmd_screenshot ;;
@@ -261,7 +261,7 @@ show_style_menu() {
 }
 
 show_setup_menu() {
-  local options="󰏘  Audio\n󰤨  Wifi\n󰂯  Bluetooth\n󰒓  Services\n󰸉  Open Wallpaper Folder\n󰸉  Set Wallpaper Folder\n󰌅  Configs\n󰯂  Scripts"
+  local options="  Audio\n  Wifi\n󰂯  Bluetooth\n󰒓  Services\n󰸉  Open Wallpaper Folder\n󰸉  Set Wallpaper Folder\n󰌅  Configs\n󰯂  Scripts"
 
   case $(menu "" "$options") in
   *Audio*) cmd_launch-audio ;;
