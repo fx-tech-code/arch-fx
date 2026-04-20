@@ -7,7 +7,7 @@ set -o pipefail
 
 title=""
 keep_open=0
-terminal="${TERMINAL:-kitty}"
+terminal="${TERMINAL:-foot}"
 
 while [ "$#" -gt 0 ]; do
     case "$1" in

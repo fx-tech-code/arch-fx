@@ -45,10 +45,10 @@ sudo pacman -S ly
 sudo systemctl enable ly@tty1
 ```
 
-## Install Terminal and Shell
+## Install Terminals and Shell
 
 ```bash
-sudo pacman -S kitty fish
+sudo pacman -S kitty foot fish
 ```
 
 ## Install Niri
