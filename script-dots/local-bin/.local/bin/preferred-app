@@ -1,0 +1,87 @@
+#!/bin/bash
+
+set -o pipefail
+
+CONFIG_DIR="$HOME/.config/preferred-apps"
+
+usage() {
+	cat >&2 <<EOF
+Usage:
+  $(basename "$0") <NAME>
+  $(basename "$0") --set <NAME> <VALUE>
+EOF
+}
+
+error() {
+	echo "Error: $1" >&2
+}
+
+validate_name() {
+	local name="$1"
+	if [ -z "$name" ] || [[ "$name" == *"/"* ]]; then
+		return 1
+	fi
+	return 0
+}
+
+get_preferred_app() {
+	local name="$1"
+	local path="$CONFIG_DIR/$name"
+
+	if [ ! -f "$path" ]; then
+		error "no configured app for '$name'"
+		return 1
+	fi
+
+	head -n 1 "$path"
+}
+
+set_preferred_app() {
+	local name="$1"
+	local value="$2"
+	local path="$CONFIG_DIR/$name"
+
+	mkdir -p "$CONFIG_DIR" || {
+		error "failed to create config directory: $CONFIG_DIR"
+		return 1
+	}
+
+	printf '%s\n' "$value" > "$path" || {
+		error "failed to write config: $path"
+		return 1
+	}
+}
+
+case "$1" in
+	--set)
+		if [ "$#" -ne 3 ]; then
+			usage
+			exit 64
+		fi
+
+		if ! validate_name "$2"; then
+			error "invalid name: $2"
+			exit 64
+		fi
+
+		set_preferred_app "$2" "$3" || exit 1
+		;;
+	-h|--help|help)
+		usage
+		exit 0
+		;;
+	*)
+		if [ "$#" -ne 1 ]; then
+			usage
+			exit 64
+		fi
+
+		if ! validate_name "$1"; then
+			error "invalid name: $1"
+			exit 64
+		fi
+
+		get_preferred_app "$1" || exit 1
+		;;
+esac
+

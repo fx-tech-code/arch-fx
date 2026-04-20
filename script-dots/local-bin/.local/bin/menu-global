@@ -125,6 +125,10 @@ cmd_show-services() {
   open-terminal-dialog systemd-manager-tui
 }
 
+cmd_show-preferred-apps() {
+  cmd_open-folder-in-editor "$HOME/.config/preferred-apps/"
+}
+
 cmd_open-wallpaper-folder() {
   local wallpaper_path
   wallpaper_path=$(get_wallpaper_path)
@@ -207,7 +211,7 @@ cmd_open-folder() {
 cmd_open-folder-in-editor() {
   local folder="$1"
   if [[ -d $folder ]]; then
-    code --new-window "$folder"
+    launch-editor --new-window "$folder"
   else
     notify-send "Folder not found" "The folder '$folder' does not exist."
   fi
@@ -261,13 +265,14 @@ show_style_menu() {
 }
 
 show_setup_menu() {
-  local options="  Audio\n  Wifi\n󰂯  Bluetooth\n󰒓  Services\n󰸉  Open Wallpaper Folder\n󰸉  Set Wallpaper Folder\n󰌅  Configs\n󰯂  Scripts"
+  local options="  Audio\n  Wifi\n󰂯  Bluetooth\n󰒓  Services\n󰀻  Preferred Apps\n󰸉  Open Wallpaper Folder\n󰸉  Set Wallpaper Folder\n󰌅  Configs\n󰯂  Scripts"
 
   case $(menu "" "$options") in
   *Audio*) cmd_launch-audio ;;
   *Wifi*) cmd_launch-wifi ;;
   *Bluetooth*) cmd_launch-bluetooth ;;
   *Services*) cmd_show-services ;;
+  *Preferred\ Apps*) cmd_show-preferred-apps ;;
   *Open\ Wallpaper\ Folder*) cmd_open-wallpaper-folder ;;
   *Set\ Wallpaper\ Folder*) cmd_set-wallpaper-folder ;;
   *Configs*) cmd_show-configs ;;

@@ -60,4 +60,4 @@ if [ "$keep_open" -eq 1 ]; then
     exec "$script_dir/open-terminal" --title "$title" --keep-open "$@"
 fi
 
-exec "$script_dir/open-terminal" --title "$title" "$@"
+exec "$script_dir/launch-terminal" --title "$title" "$@"

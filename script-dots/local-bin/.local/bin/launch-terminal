@@ -7,7 +7,19 @@ set -o pipefail
 
 title=""
 keep_open=0
-terminal="${TERMINAL:-foot}"
+
+configured_terminal=""
+if command -v preferred-app >/dev/null 2>&1; then
+    configured_terminal="$(preferred-app TERMINAL 2>/dev/null || true)"
+fi
+
+if [ -n "$configured_terminal" ]; then
+    terminal="$configured_terminal"
+elif command -v foot >/dev/null 2>&1; then
+    terminal="foot"
+else
+    terminal="kitty"
+fi
 
 while [ "$#" -gt 0 ]; do
     case "$1" in
@@ -39,11 +51,6 @@ while [ "$#" -gt 0 ]; do
     esac
 done
 
-if [ "$#" -lt 1 ]; then
-    echo "Usage: $(basename "$0") [--title <title>] [--keep-open] <command> [args...]" >&2
-    exit 64
-fi
-
 if ! command -v "$terminal" >/dev/null 2>&1; then
     echo "Error: $terminal is required but was not found in PATH." >&2
     exit 127
@@ -53,6 +60,10 @@ if [ -n "$title" ]; then
     title_args=(--title "$title")
 else
     title_args=()
+fi
+
+if [ "$#" -eq 0 ]; then
+    exec "$terminal" "${title_args[@]}"
 fi
 
 if [ "$keep_open" -eq 1 ]; then

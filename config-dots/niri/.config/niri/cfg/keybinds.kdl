@@ -8,12 +8,13 @@ binds {
 
     // ─── Base ───
     Mod+Alt+Space                      hotkey-overlay-title="System Menu" { spawn-sh "menu-global"; }
-    Mod+Space                          hotkey-overlay-title="Open App Launcher" { spawn "fuzzel"; }
+    Mod+Space                          hotkey-overlay-title="Open App Launcher" { spawn-sh "launch-launcher"; }
     Mod+L                              hotkey-overlay-title="Lock Screen" { spawn "hyprlock"; }
-    Mod+Return                         hotkey-overlay-title="Open Terminal: Foot" { spawn "foot"; }
-    Mod+B                              hotkey-overlay-title="Open Browser: Zen" { spawn "zen-browser"; }
-    Mod+E                              hotkey-overlay-title="Open File Manager: Nautilus" { spawn "nautilus"; }
-    Mod+M                              hotkey-overlay-title="Open Mail: Thunderbird" { spawn "thunderbird"; }
+    Mod+Return                         hotkey-overlay-title="Open Terminal" { spawn-sh "launch-terminal"; }
+    Mod+B                              hotkey-overlay-title="Open Browser" { spawn-sh "launch-browser"; }
+    Mod+P                              hotkey-overlay-title="Open Browser" { spawn-sh "launch-browser --private"; }
+    Mod+E                              hotkey-overlay-title="Open File Manager" { spawn-sh "launch-filemanager"; }
+    Mod+M                              hotkey-overlay-title="Open Mail" { spawn-sh "launch-mailclient"; }
     Mod+K                              hotkey-overlay-title="Keybindings Menu" { spawn-sh "menu-global Keybindings"; }
     
     // ─── Settings ───
@@ -22,8 +23,8 @@ binds {
     Mod+Shift+V                        hotkey-overlay-title="Open Volume Mixer" { spawn-sh "open-terminal-dialog wiremix --tab output"; }
     
     // ─── Special Keys ───
-    XF86HomePage                       hotkey-overlay-title="Open Browser: Zen" { spawn "zen-browser"; }
-    XF86Mail                           hotkey-overlay-title="Open Mail: Thunderbird" { spawn "thunderbird"; }
+    XF86HomePage                       hotkey-overlay-title="Open Browser" { spawn-sh "launch-browser"; }
+    XF86Mail                           hotkey-overlay-title="Open Mail" { spawn-sh "launch-mailclient"; }
     XF86Calculator                     hotkey-overlay-title="Open Calculator" { spawn "gnome-calculator"; }
     XF86Sleep                          hotkey-overlay-title="Open Session Menu" { spawn-sh "menu-global session"; }
 

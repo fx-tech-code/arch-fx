@@ -30,7 +30,7 @@
     },
     "custom/app-launcher": {
         "format": "",
-        "on-click": "fuzzel",
+        "on-click": "launch-launcher",
         "tooltip-format": "App Launcher: Super + Space"
     },
     "niri/workspaces": {

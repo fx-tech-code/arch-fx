@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Launch the configured preferred mail client.
+# Usage: launch-mailclient
+
+set -o pipefail
+
+usage() {
+    cat >&2 <<EOF
+Usage: $(basename "$0")
+EOF
+}
+
+error() {
+    echo "Error: $1" >&2
+}
+
+if [ "$#" -ne 0 ]; then
+    usage
+    exit 64
+fi
+
+mailclient=""
+if command -v preferred-app >/dev/null 2>&1; then
+    mailclient="$(preferred-app MAILCLIENT 2>/dev/null || true)"
+fi
+
+if [ -n "$mailclient" ] && ! command -v "$mailclient" >/dev/null 2>&1; then
+    mailclient=""
+fi
+
+if [ -z "$mailclient" ] && command -v thunderbird >/dev/null 2>&1; then
+    mailclient="thunderbird"
+fi
+
+if [ -z "$mailclient" ]; then
+    error "no mail client configured and thunderbird was not found in PATH"
+    exit 127
+fi
+
+exec "$mailclient"

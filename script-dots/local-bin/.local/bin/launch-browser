@@ -1,0 +1,82 @@
+#!/bin/bash
+
+# Launch the configured preferred browser.
+# Usage: launch-browser [--private] [url-or-arg ...]
+
+set -o pipefail
+
+usage() {
+    cat >&2 <<EOF
+Usage: $(basename "$0") [--private] [url-or-arg ...]
+EOF
+}
+
+error() {
+    echo "Error: $1" >&2
+}
+
+private_mode=0
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --private)
+            private_mode=1
+            shift
+            ;;
+        -h|--help|help)
+            usage
+            exit 0
+            ;;
+        --)
+            shift
+            break
+            ;;
+        -* )
+            error "Unknown option: $1"
+            usage
+            exit 64
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+browser=""
+if command -v preferred-app >/dev/null 2>&1; then
+    browser="$(preferred-app BROWSER 2>/dev/null || true)"
+fi
+
+if [ -n "$browser" ] && ! command -v "$browser" >/dev/null 2>&1; then
+    browser=""
+fi
+
+if [ -z "$browser" ] && command -v firefox >/dev/null 2>&1; then
+    browser="firefox"
+fi
+
+if [ -z "$browser" ]; then
+    error "no browser configured and firefox was not found in PATH"
+    exit 127
+fi
+
+private_args=()
+if [ "$private_mode" -eq 1 ]; then
+    # Pick a private-mode flag based on browser family.
+    case "$(basename "$browser")" in
+        firefox|zen-browser|librewolf|waterfox)
+            private_args=(--private-window)
+            ;;
+        chrome|google-chrome|chromium|brave|brave-browser|microsoft-edge|microsoft-edge-stable|vivaldi|opera)
+            private_args=(--incognito)
+            ;;
+        qutebrowser)
+            private_args=(--target private-window)
+            ;;
+        *)
+            private_args=(--private-window)
+            ;;
+    esac
+fi
+
+exec "$browser" "${private_args[@]}" "$@"

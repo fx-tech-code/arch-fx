@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Launch the configured preferred file manager.
+# Usage: launch-filemanager [path-or-arg ...]
+
+set -o pipefail
+
+error() {
+    echo "Error: $1" >&2
+}
+
+filemanager=""
+if command -v preferred-app >/dev/null 2>&1; then
+    filemanager="$(preferred-app FILEMANAGER 2>/dev/null || true)"
+fi
+
+if [ -n "$filemanager" ] && ! command -v "$filemanager" >/dev/null 2>&1; then
+    filemanager=""
+fi
+
+if [ -z "$filemanager" ] && command -v nautilus >/dev/null 2>&1; then
+    filemanager="nautilus"
+fi
+
+if [ -z "$filemanager" ]; then
+    error "no file manager configured and nautilus was not found in PATH"
+    exit 127
+fi
+
+exec "$filemanager" "$@"

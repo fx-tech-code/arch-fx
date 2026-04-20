@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Launch the configured preferred editor.
+# Usage: launch-editor [file-or-arg ...]
+
+set -o pipefail
+
+error() {
+    echo "Error: $1" >&2
+}
+
+editor=""
+if command -v preferred-app >/dev/null 2>&1; then
+    editor="$(preferred-app EDITOR 2>/dev/null || true)"
+fi
+
+if [ -n "$editor" ] && ! command -v "$editor" >/dev/null 2>&1; then
+    editor=""
+fi
+
+if [ -z "$editor" ] && command -v code >/dev/null 2>&1; then
+    editor="code"
+fi
+
+if [ -z "$editor" ] && command -v nvim >/dev/null 2>&1; then
+    editor="nvim"
+fi
+
+if [ -z "$editor" ]; then
+    error "no editor configured and neither code nor nvim was found in PATH"
+    exit 127
+fi
+
+exec "$editor" "$@"
