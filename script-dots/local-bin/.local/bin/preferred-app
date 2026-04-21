@@ -9,6 +9,7 @@ usage() {
 Usage:
   $(basename "$0") <NAME>
   $(basename "$0") --set <NAME> <VALUE>
+  $(basename "$0") --list
 EOF
 }
 
@@ -52,7 +53,27 @@ set_preferred_app() {
 	}
 }
 
+list_preferred_apps() {
+	if [ ! -d "$CONFIG_DIR" ]; then
+		return 0
+	fi
+
+	# Print only keys (filenames), one per line.
+	for path in "$CONFIG_DIR"/*; do
+		[ -f "$path" ] || continue
+		basename "$path"
+	done | sort
+}
+
 case "$1" in
+	--list)
+		if [ "$#" -ne 1 ]; then
+			usage
+			exit 64
+		fi
+
+		list_preferred_apps || exit 1
+		;;
 	--set)
 		if [ "$#" -ne 3 ]; then
 			usage
