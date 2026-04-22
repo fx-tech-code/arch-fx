@@ -34,9 +34,9 @@ function fish_prompt
 
     # Prompt symbol, colored by last exit status
     if test $last_status -eq 0
-        echo -n " " $c_ok"❯ "
+        echo -n "" $c_ok"❯ "
     else
-        echo -n " " $c_err"❯ "
+        echo -n "" $c_err"❯ "
     end
 
     echo -n $c_reset
