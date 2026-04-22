@@ -102,7 +102,7 @@ cmd_show-keybindings() {
 }
 
 cmd_open-theme-config() {
-  cmd_open-folder-in-editor "$HOME/.config/global-theme"
+  cmd_open-folder-in-editor "$HOME/.config/colorizer/current"
 }
 
 cmd_show-wallpapers() {
