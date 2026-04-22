@@ -6,10 +6,10 @@
 
         border {
             on
-            width 1
+            width 2
         }
 
-        gaps 2 // Gap between windows
+        gaps 5 // Gap between windows
         center-focused-column "never"               // Don’t auto-center focused column
 	    //always-center-single-column
 
@@ -21,11 +21,10 @@
             proportion 0.66667
         }
 
-        struts {}
-    }
-
-    window-rule {
-        geometry-corner-radius 2
-
-        clip-to-geometry true                       // Clips window contents to the rounded corner boundaries.
+        struts {
+            left -5
+            right -5
+            top -5
+            bottom -5
+        }
     }
