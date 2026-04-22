@@ -1,5 +1,5 @@
 /* Include global-theme settings */
-@import "/home/fx/.config/global-theme/waybar.css";
+@import "/home/fx/.config/colorizer/current/waybar.colorizer.css";
 
 * {
   border: none;

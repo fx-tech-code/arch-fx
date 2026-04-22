@@ -8,4 +8,4 @@ include "./cfg/rules.kdl"
 include "./cfg/misc.kdl"
 
 // Include global-theme settings
-include "/home/fx/.config/global-theme/niri.kdl"
+include "/home/fx/.config/colorizer/current/niri.colorizer.kdl"

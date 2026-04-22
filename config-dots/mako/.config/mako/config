@@ -1,5 +1,5 @@
 # Include global-theme settings
-include=~/.config/global-theme/mako
+include=~/.config/colorizer/current/mako.colorizer
 
 font=Sans 11
 border-size=2
