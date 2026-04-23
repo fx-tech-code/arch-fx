@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+# Refreshes foot terminal to use the latest applied colors
+
+echo "Refreshing foot terminal colors..."
+if pgrep -x foot >/dev/null 2>&1; then
+	pkill -USR1 foot
+else
+	echo "foot is not running; skipping."
+fi

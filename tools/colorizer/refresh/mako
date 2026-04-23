@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+# Refreshes mako to use the latest applied colors
+
+echo "Refreshing mako..."
+if pgrep -x mako >/dev/null 2>&1; then
+	makoctl reload
+else
+	echo "mako is not running; skipping."
+fi

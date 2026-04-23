@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+# Refreshes kitty terminal to use the latest applied colors
+
+echo "Refreshing kitty terminal colors..."
+if pgrep -x kitty >/dev/null 2>&1; then
+	killall -SIGUSR1 kitty
+else
+	echo "kitty is not running; skipping."
+fi

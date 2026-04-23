@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+# Refreshes waybar to use the latest applied colors
+
+echo "Refreshing waybar..."
+if pgrep -x waybar >/dev/null 2>&1; then
+	killall -SIGUSR2 waybar
+else
+	echo "waybar is not running; skipping."
+fi

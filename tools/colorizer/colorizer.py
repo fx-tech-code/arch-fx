@@ -37,6 +37,7 @@ TEMPLATES_DIR = SCRIPT_DIR / "Asset" / "Templates"
 COLORSCHEME_DIR = config.COLORSCHEMES_DIR
 OUTPUT_DIR = config.CURRENT_THEME_DIR
 TEMPLATE_PROCESSOR = SCRIPT_DIR / "template-processor.py"
+REFRESH_DIR = SCRIPT_DIR / "refresh"
 
 CACHE_DIR = Path(
     os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")
@@ -164,6 +165,38 @@ def build_toml(app_ids: list[str], mode: str) -> str:
     return "\n".join(lines) + "\n"
 
 
+def run_refresh_scripts() -> int:
+    """
+    Execute all scripts in refresh/ in sorted order.
+
+    Returns 0 if all scripts succeed, else 1.
+    """
+    if not REFRESH_DIR.exists() or not REFRESH_DIR.is_dir():
+        print(f"Error: Refresh directory not found: {REFRESH_DIR}", file=sys.stderr)
+        return 1
+
+    scripts = sorted([p for p in REFRESH_DIR.iterdir() if p.is_file()])
+    if not scripts:
+        print("Error: No refresh scripts found.", file=sys.stderr)
+        return 1
+
+    had_errors = False
+    for script in scripts:
+        result = subprocess.run(["sh", str(script)], cwd=str(SCRIPT_DIR))
+        if result.returncode != 0:
+            had_errors = True
+            print(
+                f"Error: Refresh script failed: {script.name} (exit {result.returncode})",
+                file=sys.stderr,
+            )
+
+    if had_errors:
+        return 1
+
+    print("Refresh completed.")
+    return 0
+
+
 # ── Apply ─────────────────────────────────────────────────────────────────────
 
 def apply_scheme(scheme_name: str, mode: str, app_ids: list[str]) -> int:
@@ -274,7 +307,9 @@ def _build_parser() -> argparse.ArgumentParser:
 Examples:
   Colorizer --list-colorschemas
   Colorizer --list-apps
+    Colorizer --refresh
   Colorizer Dracula dark --all-apps
+    Colorizer Dracula dark --all-apps --refresh
   Colorizer Dracula dark kitty
   Colorizer Nord light gtk,fuzzel,niri
   Colorizer "Catppuccin" dark kitty,alacritty,gtk,code
@@ -317,6 +352,11 @@ Examples:
         action="store_true",
         help="Apply the colour scheme to all supported app IDs",
     )
+    parser.add_argument(
+        "--refresh",
+        action="store_true",
+        help="Execute all scripts in refresh/",
+    )
 
     return parser
 
@@ -324,6 +364,19 @@ Examples:
 def main() -> int:
     parser = _build_parser()
     args = parser.parse_args()
+
+    if args.refresh and (args.list_colorschemas or args.list_apps):
+        parser.error("--refresh cannot be combined with --list-colorschemas or --list-apps.")
+
+    # --refresh only
+    if args.refresh and args.scheme is None and args.mode is None and args.apps is None and not args.all_apps:
+        return run_refresh_scripts()
+
+    if args.refresh and args.scheme is None and (args.mode is not None or args.apps is not None or args.all_apps):
+        parser.error(
+            "Invalid argument combination with --refresh.\n"
+            "Use either '--refresh' by itself or a full apply command plus --refresh."
+        )
 
     # ── --list-colorschemas ───────────────────────────────────────────────────
     if args.list_colorschemas:
@@ -370,7 +423,14 @@ def main() -> int:
         if not app_ids:
             parser.error("APPS must contain at least one app ID.")
 
-    return apply_scheme(args.scheme, args.mode, app_ids)
+    apply_code = apply_scheme(args.scheme, args.mode, app_ids)
+    if apply_code != 0:
+        return apply_code
+
+    if args.refresh:
+        return run_refresh_scripts()
+
+    return 0
 
 
 if __name__ == "__main__":
