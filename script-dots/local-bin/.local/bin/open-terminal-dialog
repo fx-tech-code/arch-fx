@@ -57,7 +57,7 @@ fi
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 
 if [ "$keep_open" -eq 1 ]; then
-    exec "$script_dir/open-terminal" --title "$title" --keep-open "$@"
+    exec "$script_dir/launch-terminal" --title "$title" --keep-open "$@"
 fi
 
 exec "$script_dir/launch-terminal" --title "$title" "$@"
