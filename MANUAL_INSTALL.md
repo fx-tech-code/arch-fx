@@ -32,8 +32,8 @@ sudo pacman -S nano fzf btop fastfetch accountsservice
 ## Install Btrfs Snapshots
 
 ```bash
-sudo pacman -S btrfs-progs snap-pac btrfs-assistant limine-mkinitcpio-hook
-yay -S limine-snapper-sync
+sudo pacman -S btrfs-progs snap-pac btrfs-assistant
+yay -S limine-mkinitcpio-hook limine-snapper-sync
 sudo limine-update && limine-snapper-sync
 sudo mv /boot/limine/limine.conf /boot/limine/limine.conf.backup
 ```
