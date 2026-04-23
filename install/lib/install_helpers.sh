@@ -144,12 +144,12 @@ stop_sudo_keepalive() {
 }
 
 pacman_install() {
-    sudo pacman -S --needed --noconfirm "$@"
+    sudo pacman -S "$@"
 }
 
 yay_install() {
     require_command yay
-    yay -S --needed --noconfirm "$@"
+    yay -S "$@"
 }
 
 run_step() {
