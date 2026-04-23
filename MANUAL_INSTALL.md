@@ -34,8 +34,9 @@ sudo pacman -S nano fzf btop fastfetch accountsservice
 ```bash
 sudo pacman -S btrfs-progs snap-pac btrfs-assistant
 yay -S limine-mkinitcpio-hook limine-snapper-sync
-sudo limine-update && limine-snapper-sync
 sudo mv /boot/limine/limine.conf /boot/limine/limine.conf.backup
+sudo limine-update
+sudo limine-snapper-sync
 ```
 
 ## Install Login-Manager
