@@ -1,9 +1,0 @@
-#!/usr/bin/env sh
-
-# Refreshes GTK3/GTK4 to use the latest applied colors
-
-echo "Refreshing GTK theme..."
-theme=$(gsettings get org.gnome.desktop.interface gtk-theme | tr -d \')
-gsettings set org.gnome.desktop.interface gtk-theme ""
-sleep 1
-gsettings set org.gnome.desktop.interface gtk-theme "$theme"
