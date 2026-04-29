@@ -1,5 +1,5 @@
 # arch-fx
-Setup and dotfiles for Arch Linux
+Setup and dotfiles for Arch Linux for Niri, Limine, btrfs
 
 ========
 

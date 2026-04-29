@@ -64,7 +64,7 @@ If prompted, choose `xdg-desktop-portal-gnome`.
 
 ```bash
 yay -S systemd-manager-tui-bin visual-studio-code-bin
-sudo pacman -S waybar awww mako caligula hypridle hyprlock hyprpicker hyprshot impala bluetui wiremix fuzzel nwg-look polkit-gnome gum ffmpegthumbnailer
+sudo pacman -S waybar awww mako caligula hypridle hyprlock hyprpicker hyprshot impala bluetui wiremix fuzzel nwg-look polkit-gnome gum ffmpegthumbnailer zenity
 ```
 
 ## Install GTK Themes
