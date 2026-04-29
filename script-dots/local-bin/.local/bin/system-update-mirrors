@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Updates the mirror list using reflector and saves it to /etc/pacman.d/mirrorlist.
+reflector | head -n 10
+terminal-show-done

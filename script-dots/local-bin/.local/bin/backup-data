@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# backup-data: zip ~/Data into ffr_privat_YYYYMMDD.zip and move it to /run/media/fx/DATEN
+
+set -o pipefail
+
+SOURCE_DIR="$HOME/Data"
+DEST_DIR="/run/media/fx/DATEN"
+TMP_WORK_DIR="$HOME"
+DATE=$(date +%Y%m%d)
+BASE_NAME="ffr_privat_${DATE}"
+
+error() {
+    echo "Error: $1" >&2
+}
+
+# Prerequisites
+if ! command -v zip >/dev/null 2>&1; then
+    error "'zip' is required but was not found in PATH"
+    exit 127
+fi
+
+if [ ! -d "$SOURCE_DIR" ]; then
+    error "Source directory '$SOURCE_DIR' does not exist"
+    exit 1
+fi
+
+if [ ! -d "$DEST_DIR" ]; then
+    error "Destination '$DEST_DIR' is not available (drive not mounted?)"
+    exit 1
+fi
+
+if [ ! -w "$TMP_WORK_DIR" ]; then
+    error "Temporary work directory '$TMP_WORK_DIR' is not writable"
+    exit 1
+fi
+
+# Resolve a unique filename at the destination (add suffix if needed)
+DEST_FILE="${DEST_DIR}/${BASE_NAME}.zip"
+if [ -f "$DEST_FILE" ]; then
+    n=1
+    while [ -f "${DEST_DIR}/${BASE_NAME}_${n}.zip" ]; do
+        n=$((n + 1))
+    done
+    DEST_FILE="${DEST_DIR}/${BASE_NAME}_${n}.zip"
+fi
+
+DEST_FILENAME=$(basename "$DEST_FILE")
+DEST_OWNER="$USER"
+DEST_GROUP=$(id -gn)
+
+# Create zip in a temp location as the current user.
+# Use $HOME instead of /tmp to avoid tmpfs quota/size limits.
+TMP_FILE=$(mktemp -p "$TMP_WORK_DIR" "backup-data.XXXXXX.zip")
+trap 'rm -f "$TMP_FILE"' EXIT
+
+# zip expects to create the archive; remove the pre-created mktemp file first.
+rm -f "$TMP_FILE"
+
+echo "Zipping '$SOURCE_DIR' ..."
+zip -0 -r "$TMP_FILE" "$SOURCE_DIR"
+ZIP_EXIT=$?
+if [ $ZIP_EXIT -ge 2 ]; then
+    if [ $ZIP_EXIT -eq 14 ]; then
+        error "Failed to create zip archive (disk/quota exceeded in '$TMP_WORK_DIR')"
+        exit 1
+    fi
+    error "Failed to create zip archive (zip exited with code $ZIP_EXIT)"
+    exit 1
+elif [ $ZIP_EXIT -eq 1 ]; then
+    echo "Warning: some files were skipped during zip (check permissions)"
+fi
+
+# Move to destination using sudo (only privileged step)
+echo "Moving archive to '$DEST_FILE' ..."
+if ! sudo install -m 644 -o "$DEST_OWNER" -g "$DEST_GROUP" "$TMP_FILE" "$DEST_FILE"; then
+    error "Failed to move archive to '$DEST_DIR'"
+    exit 1
+fi
+
+echo "Backup complete: $DEST_FILE"
