@@ -92,6 +92,10 @@ cmd_pick-color() {
   pkill hyprpicker || hyprpicker -a
 }
 
+cmd_pick-nerd-font-icon() {
+  menu-nerdfont-picker
+}
+
 cmd_pick-window-info() {
   local selected_window=""
 
@@ -289,11 +293,12 @@ show_screenshot_menu() {
 }
 
 show_tools_menu() {
-  local options="  Take Screenshot\n󰃉  Pick Color\n  Get Window Info\n󰕓  Create bootable USB"
+  local options="  Take Screenshot\n󰃉  Pick Color\n󰚌  Pick Nerd Font Icon\n  Get Window Info\n󰕓  Create bootable USB"
 
   case $(menu "" "$options") in
   *Screenshot*) show_screenshot_menu ;;
   *Color*) cmd_pick-color ;;
+  *Nerd\ Font\ Icon*) cmd_pick-nerd-font-icon ;;
   *Window*) cmd_pick-window-info ;;
   *USB*) cmd_create-bootable-usb ;;
   *) back_to show_main_menu ;;

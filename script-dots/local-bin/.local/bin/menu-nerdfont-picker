@@ -1,0 +1,112 @@
+#!/bin/bash
+
+MENU_WIDTH_PADDING=2
+NERDFONT_ICON_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/omarchy"
+NERDFONT_ICON_CACHE_FILE="$NERDFONT_ICON_CACHE_DIR/nerdfont-icons.tsv"
+NERDFONT_GLYPHNAMES_URL="https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/glyphnames.json"
+NERDFONT_CACHE_TTL_SECONDS=$((60 * 60 * 24 * 30))
+NERDFONT_PICKER_FONT="monospace:size=14"
+
+menu() {
+  local prompt="$1"
+  local options="$2"
+  shift 2
+  local preselect=""
+  local options_count options_width
+  local -a args=("$@")
+
+  if [[ -n $preselect ]]; then
+    local index
+    index=$(echo -e "$options" | grep -nxF "$preselect" | cut -d: -f1)
+    if [[ -n $index ]]; then
+      args+=("-c" "$index")
+    fi
+  fi
+
+  options_count=$(printf "%b" "$options" | awk 'END { print (NR ? NR : 1) }')
+  (( options_count > 20 )) && options_count=20
+
+  options_width=$(printf "%b" "$options" | awk 'length > max { max = length } END { print (max ? max : 1) }')
+  options_width=$((options_width + MENU_WIDTH_PADDING))
+  (( options_width > 80 )) && options_width=80
+
+  echo -e "$options" | fuzzel --dmenu -p "${prompt:+$prompt…}" --lines "$options_count" --width "$options_width" "${args[@]}" 2>/dev/null
+}
+
+copy_to_clipboard() {
+  local value="$1"
+
+  if command -v wl-copy >/dev/null 2>&1; then
+    printf '%s' "$value" | wl-copy
+  elif command -v xclip >/dev/null 2>&1; then
+    printf '%s' "$value" | xclip -selection clipboard
+  elif command -v xsel >/dev/null 2>&1; then
+    printf '%s' "$value" | xsel --clipboard --input
+  else
+    return 1
+  fi
+}
+
+ensure_nerdfont_icon_cache() {
+  local now mtime age
+
+  if [[ ! -s $NERDFONT_ICON_CACHE_FILE ]]; then
+    build_nerdfont_icon_cache
+    return $?
+  fi
+
+  now=$(date +%s)
+  mtime=$(stat -c %Y "$NERDFONT_ICON_CACHE_FILE" 2>/dev/null || echo 0)
+  age=$((now - mtime))
+
+  if (( age > NERDFONT_CACHE_TTL_SECONDS )); then
+    build_nerdfont_icon_cache
+  fi
+}
+
+build_nerdfont_icon_cache() {
+  local tmp_file
+
+  if ! command -v curl >/dev/null 2>&1 || ! command -v jq >/dev/null 2>&1; then
+    return 1
+  fi
+
+  mkdir -p "$NERDFONT_ICON_CACHE_DIR"
+  tmp_file=$(mktemp)
+
+  if curl -fsSL "$NERDFONT_GLYPHNAMES_URL" \
+    | jq -r 'to_entries[] | select(.value.char != null and .value.char != "") | [.value.char, .key] | @tsv' \
+    | sort -k2,2 >"$tmp_file"; then
+    mv "$tmp_file" "$NERDFONT_ICON_CACHE_FILE"
+    return 0
+  fi
+
+  rm -f "$tmp_file"
+  return 1
+}
+
+main() {
+  local selection glyph name options
+
+  if ! ensure_nerdfont_icon_cache; then
+    notify-send "Nerd Font icon picker unavailable" "Please install 'curl' and 'jq', then try again."
+    exit 1
+  fi
+
+  options=$(awk -F'\t' '{ printf "%s\t%s\n", $1, $2 }' "$NERDFONT_ICON_CACHE_FILE")
+  selection=$(menu "" "$options" --lines 20 --font "$NERDFONT_PICKER_FONT")
+
+  [[ -z $selection ]] && exit 0
+
+  glyph="${selection%%$'\t'*}"
+  name="${selection#*$'\t'}"
+
+  if copy_to_clipboard "$glyph"; then
+    notify-send "Icon copied" "Copied '$name' to clipboard: $glyph"
+  else
+    open-terminal-dialog --keep-open printf '%s\n' "$glyph"
+    notify-send "Clipboard helper not found" "Install wl-clipboard (Wayland) or xclip/xsel (X11)."
+  fi
+}
+
+main
