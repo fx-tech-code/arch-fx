@@ -15,7 +15,7 @@ binds {
     Mod+P                              hotkey-overlay-title="Open Browser" { spawn-sh "launch-browser --private"; }
     Mod+E                              hotkey-overlay-title="Open File Manager" { spawn-sh "launch-filemanager"; }
     Mod+M                              hotkey-overlay-title="Open Mail" { spawn-sh "launch-mailclient"; }
-    Mod+K                              hotkey-overlay-title="Keybindings Menu" { spawn-sh "menu-global Keybindings"; }
+    Mod+K                              hotkey-overlay-title="Keybindings Menu" { spawn-sh "menu-global keybindings"; }
     
     // ─── Settings ───
     Mod+Shift+B                        hotkey-overlay-title="Open Bluetooth Manager" { spawn-sh "open-terminal-dialog bluetui"; }
@@ -27,6 +27,7 @@ binds {
     XF86Mail                           hotkey-overlay-title="Open Mail" { spawn-sh "launch-mailclient"; }
     XF86Calculator                     hotkey-overlay-title="Open Calculator" { spawn "gnome-calculator"; }
     XF86Sleep                          hotkey-overlay-title="Open Session Menu" { spawn-sh "menu-global session"; }
+    Print                              hotkey-overlay-title="Open Screenshot Menu" { spawn-sh "menu-global screenshot"; }
 
     // ─── Window Movement and Focus ───
     Mod+Left                            { focus-column-left; }

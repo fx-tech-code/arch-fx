@@ -60,13 +60,32 @@ go_to_menu() {
   *remove*) show_remove_menu ;;
   *system*) show_system_menu ;;
   *session*) show_session_menu ;;
+  *screenshot*) show_screenshot_menu ;;
   esac
 }
 
 # ----------------------------------------------- CMD FUNCTIONS ------------------------------------------------ #
 
-cmd_screenshot() {
-  pkill hyprshot || hyprshot -m output
+cmd_take-screenshot() {
+  local mode="$1"
+  local screenshot_path
+  screenshot_path=$(get_screenshot_path)
+
+  case "$mode" in
+    fullscreen)
+      niri msg action screenshot-screen  
+      notify-send "Screenshot saved" $'You can find the image in:\n'"$screenshot_path"
+      ;;
+    area)
+      niri msg action screenshot
+      notify-send "Screenshot saved" $'You can find the image in:\n'"$screenshot_path"
+      ;;
+    window)
+      niri msg action screenshot-window
+      notify-send "Screenshot saved" $'You can find the image in:\n'"$screenshot_path"
+      ;;
+    *) notify-send "Invalid screenshot mode" "Please choose a valid mode: fullscreen, area, or window." ;;
+  esac
 }
 
 cmd_pick-color() {
@@ -173,6 +192,10 @@ cmd_update-system() {
   open-terminal-dialog system-update
 }
 
+cmd_update-mirrors() {
+  open-terminal-dialog system-update-mirrors
+}
+
 cmd_cleanup-system() {
   open-terminal-dialog system-cleanup
 }
@@ -234,6 +257,18 @@ get_wallpaper_path() {
     return 1
 }
 
+get_screenshot_path() {
+  local cfg="$HOME/.config/niri/cfg/misc.kdl"
+  local template
+  template=$(awk -F'"' '/^[[:space:]]*screenshot-path[[:space:]]+"/ { print $2; exit }' "$cfg")
+  
+  if [[ -n $template ]]; then
+    # Extract directory from template and expand ~
+    local dir="${template%/*}"
+    printf '%s\n' "${dir/#\~/$HOME}"
+  fi
+}
+
 # ----------------------------------------------- MENUS ------------------------------------------------ #
 
 show_main_menu() {
@@ -242,11 +277,22 @@ show_main_menu() {
   go_to_menu "$(menu "" "$options")"
 }
 
+show_screenshot_menu() {
+  local options="  Fullscreen\n󰋫  Area\n  Window"
+
+  case $(menu "" "$options") in
+  *Fullscreen*) cmd_take-screenshot fullscreen ;;
+  *Area*) cmd_take-screenshot area ;;
+  *Window*) cmd_take-screenshot window ;;
+  *) back_to show_tools_menu ;;
+  esac
+}
+
 show_tools_menu() {
   local options="  Take Screenshot\n󰃉  Pick Color\n  Get Window Info\n󰕓  Create bootable USB"
 
   case $(menu "" "$options") in
-  *Screenshot*) cmd_screenshot ;;
+  *Screenshot*) show_screenshot_menu ;;
   *Color*) cmd_pick-color ;;
   *Window*) cmd_pick-window-info ;;
   *USB*) cmd_create-bootable-usb ;;
@@ -301,10 +347,11 @@ show_remove_menu() {
 }
 
 show_system_menu() {
-  local options="  About\n  Update\n  Cleanup"
+  local options="  About\n󱞟  Update Mirrors\n  Update\n  Cleanup"
   
   case $(menu "" "$options") in
   *About*) cmd_show-about ;;
+  *Update\ Mirrors*) cmd_update-mirrors ;;
   *Update*) cmd_update-system ;;
   *Cleanup*) cmd_cleanup-system ;;
   *) back_to show_main_menu ;;
