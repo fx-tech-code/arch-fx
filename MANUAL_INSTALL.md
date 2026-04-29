@@ -26,7 +26,7 @@ sudo pacman -S udiskie
 ## Install Base Packages
 
 ```bash
-sudo pacman -S less nano fzf btop fastfetch accountsservice
+sudo pacman -S less nano fzf btop fastfetch accountsservice zip reflector
 ```
 
 ## Install Btrfs Snapshots
