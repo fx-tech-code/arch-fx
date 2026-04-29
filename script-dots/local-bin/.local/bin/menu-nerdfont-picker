@@ -102,7 +102,7 @@ main() {
   name="${selection#*$'\t'}"
 
   if copy_to_clipboard "$glyph"; then
-    notify-send "Icon copied" "Copied '$name' to clipboard: $glyph"
+    notify-send "Icon copied" "Copied '$name' to clipboard:   $glyph"
   else
     open-terminal-dialog --keep-open printf '%s\n' "$glyph"
     notify-send "Clipboard helper not found" "Install wl-clipboard (Wayland) or xclip/xsel (X11)."
