@@ -6,7 +6,7 @@
     "spacing": 4, // Gaps between modules (4px)
     // Choose the order of the modules
     "modules-left": [
-        "custom/main-menu",
+        "custom/global-menu",
         "custom/app-launcher",
         "niri/workspaces"
     ],
@@ -23,13 +23,13 @@
         "custom/session"
     ],
     //Modules configuration
-    "custom/main-menu": {
-        "format": "",
+    "custom/global-menu": {
+        "format": "",
         "on-click": "menu-global",
-        "tooltip-format": "Main Menu: Super + Alt + Space"
+        "tooltip-format": "Global Menu: Super + Alt + Space"
     },
     "custom/app-launcher": {
-        "format": "",
+        "format": "󰀻",
         "on-click": "launch-launcher",
         "tooltip-format": "App Launcher: Super + Space"
     },
@@ -65,12 +65,12 @@
     },
     "cpu": {
         "interval": 2,
-        "format": " {usage:>2}%",
+        "format": "CPU: {usage:>2}%",
         "on-click": "open-terminal-dialog btop"
     },
     "memory": {
         "interval": 2,
-        "format": " {used:>2}G",
+        "format": "RAM: {used:>2}G",
         "on-click": "open-terminal-dialog btop"
     },
     "network": {

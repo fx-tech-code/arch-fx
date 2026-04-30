@@ -8,12 +8,12 @@
 }
 
 window#waybar {
+  font-size: 13px;
+  font-family: 'Adwaita Mono', monospace;
   background: #232323;       /* Fallback background color */ 
   background: @bg_color;
   color: white;                /* Fallback color */
   color: @color;
-  font-size: 13px;
-  font-family: 'monospace';
 }
 
 .modules-left {
@@ -48,11 +48,23 @@ window#waybar {
   font-size: 14px;
 }
 
-
-#custom-main-menu
+#cpu,
+#memory
 {
-  margin: 0 8px;
-  font-size: 16px;
+  font-size: 12px;
+}
+
+
+#custom-global-menu,
+#custom-app-launcher
+{
+  margin: 0 4px;
+  min-width: 12px;
+  font-size: 18px;
+}
+
+#workspaces {
+  margin-left: 10px;
 }
 
 #workspaces button {
@@ -63,7 +75,7 @@ window#waybar {
   background: darkgrey;        
   color: black;                   /* Fallback color */
   color: @accent_color;
-  font-size: 10px;
+  font-size: 11px;
   border-radius: 2px;
 }
 
