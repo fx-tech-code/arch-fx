@@ -5,7 +5,6 @@ NERDFONT_ICON_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/omarchy"
 NERDFONT_ICON_CACHE_FILE="$NERDFONT_ICON_CACHE_DIR/nerdfont-icons.tsv"
 NERDFONT_GLYPHNAMES_URL="https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/glyphnames.json"
 NERDFONT_CACHE_TTL_SECONDS=$((60 * 60 * 24 * 30))
-NERDFONT_PICKER_FONT="monospace:size=14"
 
 menu() {
   local prompt="$1"
@@ -94,7 +93,7 @@ main() {
   fi
 
   options=$(awk -F'\t' '{ printf "%s\t%s\n", $1, $2 }' "$NERDFONT_ICON_CACHE_FILE")
-  selection=$(menu "" "$options" --lines 20 --font "$NERDFONT_PICKER_FONT")
+  selection=$(menu "" "$options" --lines 20 )
 
   [[ -z $selection ]] && exit 0
 
