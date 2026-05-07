@@ -8,7 +8,7 @@
 }
 
 window#waybar {
-  font-size: 13px;
+  font-size: 12.5px;
   font-family: 'Adwaita Mono', monospace;
   background: #232323;       /* Fallback background color */ 
   background: @bg_color;
@@ -38,6 +38,9 @@ window#waybar {
   min-width: 12px;
 }
 
+#clock {
+  padding-top: 2px;
+}
 
 #custom-session,
 #tray,
@@ -53,7 +56,6 @@ window#waybar {
 {
   font-size: 12px;
 }
-
 
 #custom-global-menu,
 #custom-app-launcher

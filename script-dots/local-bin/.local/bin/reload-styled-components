@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Reload components that depend on styling.
+echo "Reloading waybar..."
+killall -SIGUSR2 waybar || true
+
+echo "Reloading mako..."
+makoctl reload || true
+
+echo "Reloading kitty..."
+killall -SIGUSR1 kitty || true
+
+echo "Reloading foot..."
+pkill -USR1 foot || true

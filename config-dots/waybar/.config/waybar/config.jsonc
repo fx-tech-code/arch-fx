@@ -54,30 +54,25 @@
         "format": "{:%H:%M}",
         "tooltip-format": "<span>{calendar}</span>",
         "calendar": {
-            "mode": "month",
-            "format": {
-                "months": "<span color='#ff6699'><b>{}</b></span>",
-                "days": "<span color='#cdd6f4'><b>{}</b></span>",
-                "weekdays": "<span color='#7CD37C'><b>{}</b></span>",
-                "today": "<span color='#ffcc66'><b>{}</b></span>"
-            }
+            "mode": "month"
         }
     },
     "cpu": {
         "interval": 2,
-        "format": "CPU: {usage:>2}%",
+        "format": " {usage:>2}",
         "on-click": "open-terminal-dialog btop"
     },
     "memory": {
         "interval": 2,
-        "format": "RAM: {used:>2}G",
+        "format": " {used:>2}",
         "on-click": "open-terminal-dialog btop"
     },
     "network": {
-        "format-wifi": "",
-        "format-ethernet": "",
-        "format-linked": "",
-        "format-disconnected": "⚠",
+        "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+        "format": "{icon}",
+        "format-wifi": "{icon}",
+        "format-ethernet": "󰀂",
+        "format-disconnected": "󰤮",
         "tooltip-format": "Id: {essid}\nSignal: {signalStrength}%\nIP: {ipaddr}",
         "on-click": "open-terminal-dialog impala"
     },

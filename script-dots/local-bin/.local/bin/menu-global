@@ -132,6 +132,10 @@ cmd_show-wallpapers() {
   menu-wallpapers
 }
 
+cmd_reload-styled-components() {
+  open-terminal-dialog reload-styled-components
+}
+
 cmd_launch-audio() {
   open-terminal-dialog wiremix --tab output
 }
@@ -306,11 +310,12 @@ show_tools_menu() {
 }
 
 show_style_menu() {
-  local options="󰏘  Theme Files\n󰸉  Wallpaper"
+  local options="󰏘  Theme Files\n󰸉  Wallpaper\n  Refresh"
 
   case $(menu "" "$options") in
   *Theme\ Files*) cmd_open-theme-config ;;
   *Wallpaper*) cmd_show-wallpapers ;;
+  *Refresh*) cmd_reload-styled-components ;;
   *) back_to show_main_menu ;;
   esac
 }
