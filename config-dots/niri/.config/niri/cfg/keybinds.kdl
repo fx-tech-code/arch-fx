@@ -96,14 +96,17 @@ binds {
     // ─── Layout Controls ───
     Mod+Q                               { close-window; }
     Mod+W                               { maximize-column; }
-    Mod+C                               { center-column; }
-    Mod+Ctrl+C                          { center-visible-columns; }
-    Mod+KP_Subtract                     { set-column-width "-10%"; }
-    Mod+KP_Add                          { set-column-width "+10%"; }
-    Mod+Shift+KP_Subtract               { set-window-height "-10%"; }
-    Mod+Shift+KP_Add                    { set-window-height "+10%"; }
-    Mod+S                               { set-column-width "33.33%"; }                       
-
+    Mod+KP_5                            { center-column; }
+    Mod+KP_Begin                        { center-column; }
+    Mod+KP_4                            { set-column-width "-10%"; }
+    Mod+KP_Left                         { set-column-width "-10%"; }
+    Mod+KP_6                            { set-column-width "+10%"; }
+    Mod+KP_Right                        { set-column-width "+10%"; }
+    Mod+KP_8                            { set-window-height "-10%"; }
+    Mod+KP_Up                           { set-window-height "-10%"; }
+    Mod+KP_2                            { set-window-height "+10%"; }
+    Mod+KP_Down                         { set-window-height "+10%"; }
+                  
     // ─── Modes ───
     Mod+T                               { toggle-window-floating; }
     Mod+F                               { fullscreen-window; }
@@ -113,6 +116,15 @@ binds {
     Ctrl+Shift+2                        { screenshot-screen; }
     Ctrl+Shift+3                        { screenshot-window; }
 
+    // ─── Volume Control ───
+    Mod+KP_Subtract                     { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "2%-"; }
+    Mod+KP_Add                          { spawn "wpctl" "set-volume" "-l" "1.0" "@DEFAULT_AUDIO_SINK@" "2%+"; }
+    Mod+KP_Enter                        { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+
+    // ─── Bluetooth Connect ───
+    Mod+KP_Multiply                     { spawn-sh "bluetoothctl power on && bluetoothctl connect $(bluetoothctl devices Paired | awk 'NR==1{print $2}')"; }
+    Mod+KP_Divide                       { spawn-sh "bluetoothctl disconnect $(bluetoothctl devices Connected | awk 'NR==1{print $2}')"; }
+    
     // ─── Emergency Escape Key ───
     // Use this when a fullscreen app blocks your keybinds.
     // It disables any active keyboard shortcut inhibitor, restoring control.

@@ -81,7 +81,7 @@
         "on-click": "open-terminal-dialog wiremix --tab output",
         "on-click-right": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
         "tooltip-format": "Playing at {volume}%",
-        "scroll-step": 5,
+        "scroll-step": 2,
         "format-muted": "",
         "format-icons": {
             "default": ["", "", ""]
