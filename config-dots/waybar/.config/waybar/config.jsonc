@@ -2,7 +2,7 @@
 {
     "layer": "top",
     "position": "top",
-    "height": 32, // Waybar height (to be removed for auto height)
+    //"height": 32, // Waybar height (to be removed for auto height)
     "spacing": 4, // Gaps between modules (4px)
     // Choose the order of the modules
     "modules-left": [
@@ -37,10 +37,10 @@
         "on-click": "activate",
         "cursor": true
     },
-    //"tray": {
-    //    // "icon-size": 21,
-    //    "spacing": 10
-    //},
+    "tray": {
+        // "icon-size": 21,
+        "spacing": 10
+    },
     "bluetooth": {
         "format": "",
         "format-off": "󰂲",
@@ -59,12 +59,13 @@
     },
     "cpu": {
         "interval": 2,
-        "format": " {usage:>2}",
+        "format": " {usage:>2}<span alpha='50%'>%</span>",
         "on-click": "open-terminal-dialog btop"
     },
     "memory": {
         "interval": 2,
-        "format": " {used:>2}",
+        "format": " {used:>2}<span alpha='50%'>G</span>",
+        "tooltip-format": "Total: {total} GB\nUsed: {used} GB\nFree: {avail} GB",
         "on-click": "open-terminal-dialog btop"
     },
     "network": {

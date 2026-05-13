@@ -22,6 +22,7 @@ binds {
     Mod+Shift+B                        hotkey-overlay-title="Open Bluetooth Manager" { spawn-sh "open-terminal-dialog bluetui"; }
     Mod+Shift+N                        hotkey-overlay-title="Open Network Manager" { spawn-sh "open-terminal-dialog impala"; }
     Mod+Shift+V                        hotkey-overlay-title="Open Volume Mixer" { spawn-sh "open-terminal-dialog wiremix --tab output"; }
+    Mod+Shift+C                        hotkey-overlay-title="Open System Manager" { spawn-sh "open-terminal-dialog btop";}
     
     // ─── Special Keys ───
     XF86HomePage                       hotkey-overlay-title="Open Browser" { spawn-sh "launch-browser"; }

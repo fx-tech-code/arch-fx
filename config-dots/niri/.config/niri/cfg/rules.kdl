@@ -22,7 +22,6 @@
     }
 
     window-rule {
-        match app-id="org.gnome.Nautilus"
-        match title="Select*file"
+        match app-id="org.gnome.Nautilus" title="Select.*file"
         open-floating true
     }

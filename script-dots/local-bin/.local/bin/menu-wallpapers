@@ -4,6 +4,8 @@
 # Select and apply wallpapers using awww
 
 THUMBNAIL_DIR="$HOME/.cache/wallpapers/thumbnails"
+THUMB_SIZE=256
+MENU_LINE_HEIGHT=100
 
 # Ensure cache directory exists
 mkdir -p "$THUMBNAIL_DIR"
@@ -14,7 +16,7 @@ thumbnail_path() {
     local name
     local thumb
     name=$(basename "$file")
-    thumb="$THUMBNAIL_DIR/${name%.*}.png"
+    thumb="$THUMBNAIL_DIR/${name%.*}-${THUMB_SIZE}.png"
 
     if [ -f "$thumb" ] && [ "$thumb" -nt "$file" ]; then
         printf '%s' "$thumb"
@@ -22,9 +24,9 @@ thumbnail_path() {
     fi
 
     if command -v ffmpegthumbnailer >/dev/null 2>&1; then
-        ffmpegthumbnailer -i "$file" -o "$thumb" -s 128 -f >/dev/null 2>&1
+        ffmpegthumbnailer -i "$file" -o "$thumb" -s "$THUMB_SIZE" -f >/dev/null 2>&1
     elif command -v convert >/dev/null 2>&1; then
-        convert "$file" -thumbnail 128x128^ -gravity center -extent 128x128 "$thumb" >/dev/null 2>&1
+        convert "$file" -thumbnail ${THUMB_SIZE}x${THUMB_SIZE}^ -gravity center -extent ${THUMB_SIZE}x${THUMB_SIZE} "$thumb" >/dev/null 2>&1
     else
         return 1
     fi
@@ -104,9 +106,9 @@ show_main_menu() {
         done < <(find "$wallpaper_path" -maxdepth 1 -type f | sort)
     fi
 
-    (( count > 20 )) && count=20
-    options_width=$(( max_width + 12 ))
-    (( options_width > 80 )) && options_width=80
+    (( count > 5 )) && count=5
+    options_width=$(( max_width + 18 ))
+    (( options_width > 180 )) && options_width=180
 
     local tmpfile
     tmpfile=$(mktemp)
@@ -125,7 +127,7 @@ show_main_menu() {
                 fi
             done < <(find "$wallpaper_path" -maxdepth 1 -type f | sort)
         fi
-    } | fuzzel --dmenu --hide-prompt --lines=$count --width=$options_width --line-height 60 --select="$selected" > "$tmpfile"
+    } | fuzzel --dmenu --hide-prompt --lines=$count --width=$options_width --line-height "$MENU_LINE_HEIGHT" --select="$selected" > "$tmpfile"
 
     selection=""
     if [ -s "$tmpfile" ]; then
@@ -148,8 +150,8 @@ show_main_menu() {
                     wallpapr set "$filepath" >/dev/null 2>&1
                 fi
             fi
-            # Keep menu open and reselect the same item
-            show_main_menu "$selection"
+            # Exit after applying selection
+            exit 0
             ;;
     esac
 }

@@ -8,8 +8,8 @@
 }
 
 window#waybar {
-  font-size: 12.5px;
-  font-family: 'Adwaita Mono', monospace;
+  font-size: 14px;
+  font-family: monospace;
   background: #232323;       /* Fallback background color */ 
   background: @bg_color;
   color: white;                /* Fallback color */
@@ -38,23 +38,11 @@ window#waybar {
   min-width: 12px;
 }
 
-#clock {
-  padding-top: 2px;
-}
-
-#custom-session,
-#tray,
-#bluetooth,
-#network,
-#pulseaudio
-{
-  font-size: 14px;
-}
-
 #cpu,
 #memory
 {
   font-size: 12px;
+  margin: 0 8px;
 }
 
 #custom-global-menu,
@@ -73,6 +61,7 @@ window#waybar {
   padding: 0;
   margin: 6px 2px;
   min-width: 30px;
+  min-height: 20px;
   opacity: 0.5;
   background: darkgrey;        
   color: black;                   /* Fallback color */
