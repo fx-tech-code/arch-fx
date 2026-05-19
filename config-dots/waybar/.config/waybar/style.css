@@ -5,6 +5,7 @@
   border: none;
   border-radius: 0;
   min-height: 0;
+  padding: 1px;
 }
 
 window#waybar {
@@ -17,11 +18,11 @@ window#waybar {
 }
 
 .modules-left {
-  margin-left: 10px;
+  margin-left: 5px;
 }
 
 .modules-right {
-  margin-right: 10px;
+  margin-right: 5px;
 }
 
 #custom-session,
@@ -29,10 +30,12 @@ window#waybar {
 #bluetooth,
 #network,
 #pulseaudio,
+#clock,
+#workspaces,
 #cpu,
 #memory,
-#clock,
-#workspaces
+#custom-global-menu,
+#custom-app-launcher
 {
   margin: 0 4px;
   min-width: 12px;
@@ -40,26 +43,19 @@ window#waybar {
 
 #cpu,
 #memory
-{
+{ 
   font-size: 12px;
-  margin: 0 8px;
 }
 
 #custom-global-menu,
 #custom-app-launcher
 {
-  margin: 0 4px;
-  min-width: 12px;
   font-size: 18px;
-}
-
-#workspaces {
-  margin-left: 10px;
 }
 
 #workspaces button {
   padding: 0;
-  margin: 6px 2px;
+  margin: 0 2px;
   min-width: 30px;
   min-height: 20px;
   opacity: 0.5;
