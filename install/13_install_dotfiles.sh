@@ -18,9 +18,11 @@ fi
 
 pacman_install stow
 
+mkdir -p "$HOME/.local"
 cd "$REPO_ROOT/script-dots"
 "$REPO_ROOT/deepstow" *
 
+mkdir -p "$HOME/.config"
 cd "$REPO_ROOT/config-dots"
 "$REPO_ROOT/deepstow" *
 
