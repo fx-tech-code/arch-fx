@@ -53,6 +53,7 @@ go_to_menu() {
   case "${1,,}" in
   *apps*) fuzzel ;;
   *tools*) show_tools_menu ;;
+  *backup*|*restore*) show_backup_restore_menu ;;
   *keybindings*) cmd_show-keybindings ;;
   *style*) show_style_menu ;;
   *setup*) show_setup_menu ;;
@@ -280,9 +281,19 @@ get_screenshot_path() {
 # ----------------------------------------------- MENUS ------------------------------------------------ #
 
 show_main_menu() {
-  local options="󰀻  Apps\n󰧑  Tools\n󰥻  Keybindings\n  Style\n  Setup\n󰉉  Install\n󰭌  Remove\n󰍹  System\n󰐥  Session"
+  local options="󰀻  Apps\n󰧑  Tools\n󰁯  Backup/Restore\n󰥻  Keybindings\n  Style\n  Setup\n󰉉  Install\n󰭌  Remove\n󰍹  System\n󰐥  Session"
 
   go_to_menu "$(menu "" "$options")"
+}
+
+show_backup_restore_menu() {
+  local options="󰁨  Backup DATA\n󰑐  Restore DATA"
+
+  case $(menu "" "$options") in
+  *Backup\ DATA*) open-terminal-dialog data-backup ;;
+  *Restore\ DATA*) open-terminal-dialog data-restore ;;
+  *) back_to show_main_menu ;;
+  esac
 }
 
 show_screenshot_menu() {

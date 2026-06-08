@@ -1,0 +1,159 @@
+#!/bin/bash
+
+# data-restore: choose a backup archive from /run/media/fx/DATEN/Backups
+# and restore its contents to ~/Data.
+
+set -o pipefail
+
+SOURCE_DIR="$HOME/Data"
+BACKUP_DIR="/run/media/fx/DATEN/Backups"
+TMP_WORK_DIR="$HOME"
+WIPE_FIRST=0
+
+error() {
+    echo "Error: $1" >&2
+}
+
+usage() {
+    cat <<EOF
+Usage: data-restore [--wipe]
+
+Options:
+  --wipe   Remove existing contents of '$SOURCE_DIR' before restoring.
+  -h, --help  Show this help.
+EOF
+}
+
+case "${1:-}" in
+    "")
+        ;;
+    --wipe)
+        WIPE_FIRST=1
+        ;;
+    -h|--help)
+        usage
+        exit 0
+        ;;
+    *)
+        error "Unknown option: $1"
+        usage
+        exit 2
+        ;;
+esac
+
+if ! command -v unzip >/dev/null 2>&1; then
+    error "'unzip' is required but was not found in PATH"
+    exit 127
+fi
+
+if [ ! -d "$BACKUP_DIR" ]; then
+    error "Backup path '$BACKUP_DIR' is not available (drive not mounted?)"
+    exit 1
+fi
+
+if [ ! -r "$BACKUP_DIR" ]; then
+    error "Backup path '$BACKUP_DIR' is not readable"
+    exit 1
+fi
+
+if [ ! -w "$TMP_WORK_DIR" ]; then
+    error "Temporary work directory '$TMP_WORK_DIR' is not writable"
+    exit 1
+fi
+
+mapfile -t BACKUP_FILES < <(find "$BACKUP_DIR" -maxdepth 1 -type f -name 'ffr_privat_*.zip' -printf '%f\n' | sort -r)
+
+if [ ${#BACKUP_FILES[@]} -eq 0 ]; then
+    error "No backup archives matching 'ffr_privat_*.zip' found in '$BACKUP_DIR'"
+    exit 1
+fi
+
+echo "Select a backup to restore:"
+for i in "${!BACKUP_FILES[@]}"; do
+    printf "  %d) %s\n" "$((i + 1))" "${BACKUP_FILES[$i]}"
+done
+
+while true; do
+    read -r -p "Enter number (or 'q' to cancel): " selection
+
+    if [ "$selection" = "q" ] || [ "$selection" = "Q" ]; then
+        echo "Restore cancelled."
+        exit 0
+    fi
+
+    if [[ "$selection" =~ ^[0-9]+$ ]] && [ "$selection" -ge 1 ] && [ "$selection" -le "${#BACKUP_FILES[@]}" ]; then
+        break
+    fi
+
+    echo "Invalid selection. Please choose a number between 1 and ${#BACKUP_FILES[@]}."
+done
+
+SELECTED_FILE="$BACKUP_DIR/${BACKUP_FILES[$((selection - 1))]}"
+
+echo "Selected: $SELECTED_FILE"
+if [ "$WIPE_FIRST" -eq 1 ]; then
+    echo "Mode: replace (existing contents in '$SOURCE_DIR' will be removed first)"
+else
+    echo "Mode: merge (existing contents in '$SOURCE_DIR' are kept)"
+fi
+
+read -r -p "This will restore into '$SOURCE_DIR'. Continue? [y/N]: " confirm
+case "$confirm" in
+    y|Y|yes|YES)
+        ;;
+    *)
+        echo "Restore cancelled."
+        exit 0
+        ;;
+esac
+
+TMP_EXTRACT_DIR=$(mktemp -d -p "$TMP_WORK_DIR" "data-restore.XXXXXX")
+trap 'rm -rf "$TMP_EXTRACT_DIR"' EXIT
+
+echo "Extracting archive ..."
+if ! unzip -q "$SELECTED_FILE" -d "$TMP_EXTRACT_DIR"; then
+    error "Failed to extract '$SELECTED_FILE'"
+    exit 1
+fi
+
+EXTRACTED_SOURCE="$TMP_EXTRACT_DIR/${SOURCE_DIR#/}"
+
+if [ ! -d "$EXTRACTED_SOURCE" ]; then
+    # Fallback for archives that only contain a relative Data path.
+    if [ -d "$TMP_EXTRACT_DIR/Data" ]; then
+        EXTRACTED_SOURCE="$TMP_EXTRACT_DIR/Data"
+    else
+        error "Could not find restored data directory inside archive"
+        exit 1
+    fi
+fi
+
+mkdir -p "$SOURCE_DIR"
+
+if [ "$WIPE_FIRST" -eq 1 ]; then
+    read -r -p "Confirm wipe of existing contents in '$SOURCE_DIR'? Type 'wipe' to continue: " wipe_confirm
+    if [ "$wipe_confirm" != "wipe" ]; then
+        echo "Restore cancelled."
+        exit 0
+    fi
+
+    echo "Wiping existing contents in '$SOURCE_DIR' ..."
+    shopt -s dotglob nullglob
+    existing=("$SOURCE_DIR"/*)
+    if [ ${#existing[@]} -gt 0 ]; then
+        if ! rm -rf -- "${existing[@]}"; then
+            shopt -u dotglob nullglob
+            error "Failed to wipe existing contents in '$SOURCE_DIR'"
+            exit 1
+        fi
+    fi
+    shopt -u dotglob nullglob
+fi
+
+echo "Restoring files to '$SOURCE_DIR' ..."
+if ! cp -a "$EXTRACTED_SOURCE"/. "$SOURCE_DIR"/; then
+    error "Failed to restore files to '$SOURCE_DIR'"
+    exit 1
+fi
+
+echo "Restore complete from: $SELECTED_FILE"

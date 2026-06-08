@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# backup-data: zip ~/Data into ffr_privat_YYYYMMDD.zip and move it to /run/media/fx/DATEN
+# data-backup: zip ~/Data into ffr_privat_YYYYMMDD.zip and move it to /run/media/fx/DATEN/Backups
 
 set -o pipefail
 
 SOURCE_DIR="$HOME/Data"
-DEST_DIR="/run/media/fx/DATEN"
+DEST_DIR="/run/media/fx/DATEN/Backups"
 TMP_WORK_DIR="$HOME"
 DATE=$(date +%Y%m%d)
 BASE_NAME="ffr_privat_${DATE}"
@@ -49,9 +49,21 @@ DEST_FILENAME=$(basename "$DEST_FILE")
 DEST_OWNER="$USER"
 DEST_GROUP=$(id -gn)
 
+echo "Ready to back up: '$SOURCE_DIR'"
+echo "Archive destination: '$DEST_FILE'"
+read -r -p "Proceed with backup? [y/N]: " confirm
+case "$confirm" in
+    y|Y|yes|YES)
+        ;;
+    *)
+        echo "Backup cancelled."
+        exit 0
+        ;;
+esac
+
 # Create zip in a temp location as the current user.
 # Use $HOME instead of /tmp to avoid tmpfs quota/size limits.
-TMP_FILE=$(mktemp -p "$TMP_WORK_DIR" "backup-data.XXXXXX.zip")
+TMP_FILE=$(mktemp -p "$TMP_WORK_DIR" "data-backup.XXXXXX.zip")
 trap 'rm -f "$TMP_FILE"' EXIT
 
 # zip expects to create the archive; remove the pre-created mktemp file first.
