@@ -7,5 +7,5 @@ source "$SCRIPT_DIR/lib/install_helpers.sh"
 
 print_heading 'Step 04: Install base packages'
 
-pacman_install less nano fzf btop fastfetch accountsservice zip reflector
+pacman_install less nano fzf btop fastfetch accountsservice zip unzip reflector
 info 'Installed base utility packages.'
