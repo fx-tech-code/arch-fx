@@ -91,6 +91,16 @@ done
 SELECTED_FILE="$BACKUP_DIR/${BACKUP_FILES[$((selection - 1))]}"
 
 echo "Selected: $SELECTED_FILE"
+
+if [ "$WIPE_FIRST" -eq 0 ]; then
+    read -r -p "Remove existing contents of '$SOURCE_DIR' before restoring? [y/N]: " wipe_answer
+    case "$wipe_answer" in
+        y|Y|yes|YES)
+            WIPE_FIRST=1
+            ;;
+    esac
+fi
+
 if [ "$WIPE_FIRST" -eq 1 ]; then
     echo "Mode: replace (existing contents in '$SOURCE_DIR' will be removed first)"
 else
