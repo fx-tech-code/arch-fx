@@ -281,7 +281,7 @@ get_screenshot_path() {
 # ----------------------------------------------- MENUS ------------------------------------------------ #
 
 show_main_menu() {
-  local options="󰀻  Apps\n󰧑  Tools\n󰁯  Backup/Restore\n󰥻  Keybindings\n  Style\n  Setup\n󰉉  Install\n󰭌  Remove\n󰍹  System\n󰐥  Session"
+  local options="󰀻  Apps\n󰧑  Tools\n󰥻  Keybindings\n  Style\n  Setup\n󰉉  Install\n󰭌  Remove\n󰍹  System\n󰁯  Backup/Restore\n󰐥  Session"
 
   go_to_menu "$(menu "" "$options")"
 }
