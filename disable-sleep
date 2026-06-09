@@ -1,0 +1,84 @@
+#!/bin/bash
+
+set -euo pipefail
+
+# Requires root privileges to write /etc/systemd/sleep.conf.
+if [ "${EUID}" -ne 0 ]; then
+  echo "Please run as root: sudo ./disable-sleep" >&2
+  exit 1
+fi
+
+mkdir -p /etc/systemd
+
+target="/etc/systemd/sleep.conf"
+tmp_file="$(mktemp)"
+trap 'rm -f "$tmp_file"' EXIT
+
+# Preserve existing content and only enforce the two keys in [Sleep].
+if [ -f "$target" ]; then
+  awk '
+    BEGIN {
+      in_sleep = 0
+      has_sleep_section = 0
+      set_suspend = 0
+      set_hibernation = 0
+    }
+
+    /^[[:space:]]*\[/ {
+      if (in_sleep) {
+        if (!set_suspend) print "AllowSuspend=no"
+        if (!set_hibernation) print "AllowHibernation=no"
+      }
+
+      in_sleep = ($0 ~ /^[[:space:]]*\[Sleep\][[:space:]]*$/)
+      if (in_sleep) has_sleep_section = 1
+
+      print
+      next
+    }
+
+    {
+      if (in_sleep && $0 ~ /^[[:space:]]*AllowSuspend[[:space:]]*=/) {
+        if (!set_suspend) {
+          print "AllowSuspend=no"
+          set_suspend = 1
+        }
+        next
+      }
+
+      if (in_sleep && $0 ~ /^[[:space:]]*AllowHibernation[[:space:]]*=/) {
+        if (!set_hibernation) {
+          print "AllowHibernation=no"
+          set_hibernation = 1
+        }
+        next
+      }
+
+      print
+    }
+
+    END {
+      if (in_sleep) {
+        if (!set_suspend) print "AllowSuspend=no"
+        if (!set_hibernation) print "AllowHibernation=no"
+      }
+
+      if (!has_sleep_section) {
+        if (NR > 0) print ""
+        print "[Sleep]"
+        print "AllowSuspend=no"
+        print "AllowHibernation=no"
+      }
+    }
+  ' "$target" > "$tmp_file"
+else
+  cat > "$tmp_file" <<'EOF'
+[Sleep]
+AllowSuspend=no
+AllowHibernation=no
+EOF
+fi
+
+install -m 0644 "$tmp_file" "$target"
+
+echo "Updated /etc/systemd/sleep.conf: suspend and hibernation disabled."
