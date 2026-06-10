@@ -7,8 +7,8 @@ binds {
     Mod+Shift+ESCAPE                     { show-hotkey-overlay; }
 
     // ─── Base ───
-    Mod+Alt+Space                      hotkey-overlay-title="System Menu" { spawn-sh "menu-global"; }
-    Mod+Space                          hotkey-overlay-title="Open App Launcher" { spawn-sh "launch-launcher"; }
+    Mod+Alt+Space                      hotkey-overlay-title="System Menu" { spawn-sh "launch-global-menu"; }
+    Mod+Space                          hotkey-overlay-title="Open App Launcher" { spawn-sh "launch-app-launcher"; }
     Mod+L                              hotkey-overlay-title="Lock Screen" { spawn "hyprlock"; }
     Mod+Return                         hotkey-overlay-title="Open Terminal" { spawn-sh "launch-terminal"; }
     Mod+B                              hotkey-overlay-title="Open Browser" { spawn-sh "launch-browser"; }

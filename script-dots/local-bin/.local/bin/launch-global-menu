@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Launch the global menu and make sure no other fuzzel instance is active.
+# Usage: launch-global-menu [arg ...]
+
+set -o pipefail
+
+close_running_fuzzel() {
+    if pgrep -x fuzzel >/dev/null 2>&1; then
+        fuzzel --close >/dev/null 2>&1 || pkill -x fuzzel >/dev/null 2>&1 || true
+    fi
+}
+
+close_running_fuzzel
+
+exec menu-global "$@"

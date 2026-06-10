@@ -9,6 +9,12 @@ error() {
     echo "Error: $1" >&2
 }
 
+close_running_fuzzel() {
+    if pgrep -x fuzzel >/dev/null 2>&1; then
+        fuzzel --close >/dev/null 2>&1 || pkill -x fuzzel >/dev/null 2>&1 || true
+    fi
+}
+
 applauncher=""
 if command -v preferred-app >/dev/null 2>&1; then
     applauncher="$(preferred-app APPLAUNCHER 2>/dev/null || true)"
@@ -26,5 +32,7 @@ if [ -z "$applauncher" ]; then
     error "no app launcher configured and fuzzel was not found in PATH"
     exit 127
 fi
+
+close_running_fuzzel
 
 exec "$applauncher" "$@"

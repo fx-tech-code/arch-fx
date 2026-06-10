@@ -25,12 +25,12 @@
     //Modules configuration
     "custom/global-menu": {
         "format": "",
-        "on-click": "menu-global",
+        "on-click": "launch-global-menu",
         "tooltip-format": "Global Menu: Super + Alt + Space"
     },
     "custom/app-launcher": {
         "format": "󰀻",
-        "on-click": "launch-launcher",
+        "on-click": "launch-app-launcher",
         "tooltip-format": "App Launcher: Super + Space"
     },
     "niri/workspaces": {
