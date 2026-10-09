@@ -59,12 +59,12 @@
     },
     "cpu": {
         "interval": 2,
-        "format": " {usage:>2}<span alpha='50%'>%</span>",
+        "format": "{usage:>2}<span alpha='50%'>%</span>",
         "on-click": "open-terminal-dialog btop"
     },
     "memory": {
         "interval": 2,
-        "format": " {used:>2}<span alpha='50%'>G</span>",
+        "format": "{used:>2}<span alpha='50%'>G</span>",
         "tooltip-format": "Total: {total} GB\nUsed: {used} GB\nFree: {avail} GB",
         "on-click": "open-terminal-dialog btop"
     },
