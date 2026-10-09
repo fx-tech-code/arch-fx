@@ -30,6 +30,7 @@ binds {
     XF86Calculator                     hotkey-overlay-title="Open Calculator" { spawn "gnome-calculator"; }
     XF86Sleep                          hotkey-overlay-title="Open Session Menu" { spawn-sh "menu-global session"; }
     Print                              hotkey-overlay-title="Open Screenshot Menu" { spawn-sh "menu-global screenshot"; }
+    Mod+Print                          hotkey-overlay-title="Take Screenshot" {spawn-sh "niri msg action screenshot"; }
 
     // ─── Window Movement and Focus ───
     Mod+Left                            { focus-column-left; }
